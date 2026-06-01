@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Card, Eyebrow } from "@/components/common";
+import { getStrategy } from "@/lib/calc";
 
 const QUE_HACE = [
   { n: "01", t: "Liquidez real", d: "Lo que de verdad te queda al mes, después de impuestos y aportes." },
@@ -9,6 +10,7 @@ const QUE_HACE = [
 ];
 
 export function LandingHero({ onStart, onExample }: { onStart: () => void; onExample: () => void }) {
+  const strat = getStrategy("pe");
   return (
     <section className="mx-auto max-w-5xl py-16 sm:py-24">
       <div className="animate-fade-up">
@@ -17,9 +19,9 @@ export function LandingHero({ onStart, onExample }: { onStart: () => void; onExa
           Compara el <span className="text-accent">valor económico real</span> de tu trabajo.
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-          Planilla (5ta) o Independiente (4ta): el bruto engaña. RateEquity calcula tu liquidez
-          real, beneficios, costo para la empresa, impuestos y tu valor por hora, para Perú con
-          tasas 2026.
+          {strat.copy.landingTagline}: el bruto engaña. RateEquity calcula tu liquidez real,
+          beneficios, costo para la empresa, impuestos y tu valor por hora, para {strat.meta.label}{" "}
+          con tasas 2026.
         </p>
       </div>
 

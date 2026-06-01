@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 
@@ -59,6 +59,19 @@ function subscribe(listener: () => void) {
 
 const EMPTY: ToastItem[] = [];
 
+// Detección de montaje en cliente sin setState-en-efecto: useSyncExternalStore
+// devuelve el snapshot de servidor (false) en SSR y en el primer render de
+// hidratación, y el de cliente (true) tras montar. Así el portal solo aparece
+// en cliente sin provocar mismatch de hidratación.
+const subscribeMounted = () => () => {};
+function useMounted() {
+  return useSyncExternalStore(
+    subscribeMounted,
+    () => true,
+    () => false,
+  );
+}
+
 /**
  * Contenedor de toasts. Se monta una vez (en el layout raíz) y se renderiza en
  * un portal sobre `document.body`: queda por encima por orden del DOM, sin
@@ -66,10 +79,7 @@ const EMPTY: ToastItem[] = [];
  */
 export function Toaster() {
   const list = useSyncExternalStore(subscribe, () => items, () => EMPTY);
-  // El portal solo existe tras montar en cliente: así el primer render coincide
-  // con el del servidor (null) y evita el mismatch de hidratación.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   if (!mounted || typeof document === "undefined") return null;
 

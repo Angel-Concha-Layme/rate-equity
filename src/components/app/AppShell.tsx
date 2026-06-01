@@ -32,7 +32,7 @@ export function AppShell() {
   // Tramo de seguro sugerido según la liquidez SIN seguro (en soles). Estable
   // frente al estado del toggle; se usa para autollenar el monto al activarlo.
   const seguroSugerido = useMemo(() => {
-    if (inputPEN.categoria !== "independiente") return 0;
+    if (inputPEN.categoria !== "informal") return 0;
     const base = computeScenario({ ...inputPEN, seguroPrivado: false }).tuyo.liquido;
     return seguroPrivadoSugerido(inputPEN.pais, base);
   }, [inputPEN]);

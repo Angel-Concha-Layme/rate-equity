@@ -133,20 +133,32 @@ export const SEMANAS_MES = 4.33;
 // evitar desbordes/solapamientos con monedas de muchos dígitos.
 const MONEY_COMPACT_DESDE = 1_000_000;
 
-export function money(n: number, opts: { decimals?: number; sign?: boolean } = {}): string {
-  const { decimals = 0, sign = false } = opts;
-  const abs = Math.abs(n);
-  const compacto = abs >= MONEY_COMPACT_DESDE;
-  const s = new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    ...(compacto
-      ? { notation: "compact", maximumFractionDigits: 1 }
-      : { minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
-  }).format(abs);
-  if (sign) return `${n < 0 ? "−" : "+"}${s}`;
-  return `${n < 0 ? "−" : ""}${s}`;
+export type MoneyFn = (n: number, opts?: { decimals?: number; sign?: boolean }) => string;
+
+/**
+ * Crea un formateador de moneda ligado a una divisa y locale concretos. Cada
+ * país (estrategia) expone el suyo, de modo que las cifras se muestran en la
+ * moneda local correspondiente sin acoplar el formateo a Perú.
+ */
+export function makeMoney(currency: string, locale: string): MoneyFn {
+  return function money(n: number, opts: { decimals?: number; sign?: boolean } = {}): string {
+    const { decimals = 0, sign = false } = opts;
+    const abs = Math.abs(n);
+    const compacto = abs >= MONEY_COMPACT_DESDE;
+    const s = new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      ...(compacto
+        ? { notation: "compact", maximumFractionDigits: 1 }
+        : { minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
+    }).format(abs);
+    if (sign) return `${n < 0 ? "−" : "+"}${s}`;
+    return `${n < 0 ? "−" : ""}${s}`;
+  };
 }
+
+/** Formateador por defecto (Soles), usado por el laboratorio y como respaldo. */
+export const money: MoneyFn = makeMoney("PEN", "es-PE");
 
 export function pct(n: number, decimals = 0): string {
   return `${n.toFixed(decimals)}%`;

@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { MODALIDADES, RADAR_AXES, money, type BreakdownStep, type Modalidad } from "@/lib/sample";
+import { MODALIDADES, RADAR_AXES, money, type BreakdownStep, type Modalidad, type MoneyFn } from "@/lib/sample";
+import { RadarTooltip } from "@/components/app/dashboard/RadarTooltip";
+
+/** Cursor "ojo" (SVG inline) para señalar que el eje revela información. */
+const EYE_CURSOR =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%231b2a4a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E\") 11 11, pointer";
 
 /** Qué representa cada eje del radar (el "por qué" de la diferencia). */
 const AXIS_RAZON: Record<string, string> = {
@@ -13,10 +18,10 @@ const AXIS_RAZON: Record<string, string> = {
 };
 
 /** Valor a mostrar por eje y modalidad (money para los monetarios, cualitativo para el resto). */
-function valorEje(key: keyof Modalidad["radar"], m: Modalidad): string {
-  if (key === "liquidez") return `${money(m.liquido)}/mes`;
-  if (key === "compTotal") return `${money(m.compTotal)}/mes`;
-  if (key === "beneficios") return `${money(m.beneficios)}/mes`;
+function valorEje(key: keyof Modalidad["radar"], m: Modalidad, fmt: MoneyFn): string {
+  if (key === "liquidez") return `${fmt(m.liquido)}/mes`;
+  if (key === "compTotal") return `${fmt(m.compTotal)}/mes`;
+  if (key === "beneficios") return `${fmt(m.beneficios)}/mes`;
   const s = m.radar[key];
   return s >= 66 ? "Alta" : s >= 33 ? "Media" : "Baja";
 }
@@ -99,9 +104,11 @@ function stepColor(kind: BreakdownStep["kind"]): string {
 export function WaterfallChart({
   steps,
   className = "block h-auto w-full",
+  money: fmt = money,
 }: {
   steps: BreakdownStep[];
   className?: string;
+  money?: MoneyFn;
 }) {
   const W = 760;
   const H = 268;
@@ -159,8 +166,8 @@ export function WaterfallChart({
         const color = stepColor(b.kind);
         const isFloat = b.kind === "inc" || b.kind === "dec";
         const labelText = isFloat
-          ? money(b.amount, { sign: true })
-          : money(b.amount);
+          ? fmt(b.amount, { sign: true })
+          : fmt(b.amount);
         const arrow = b.kind === "dec" ? "▾ " : b.kind === "inc" ? "▴ " : "";
         return (
           <g key={i}>
@@ -254,7 +261,10 @@ export function HBars({
 /* ------------------------------------------------------------------ *
  * Radar: comparación multi-atributo
  * ------------------------------------------------------------------ */
-export function RadarChart({ modalidades = MODALIDADES }: { modalidades?: Modalidad[] } = {}) {
+export function RadarChart({
+  modalidades = MODALIDADES,
+  money: fmt = money,
+}: { modalidades?: Modalidad[]; money?: MoneyFn } = {}) {
   // viewBox más ancho que alto: deja margen horizontal para las etiquetas
   // laterales (antes se recortaban). El svg se dimensiona por ancho.
   const W = 440;
@@ -309,7 +319,7 @@ export function RadarChart({ modalidades = MODALIDADES }: { modalidades?: Modali
             return (
               <g
                 key={ax.key}
-                className="cursor-help"
+                style={{ cursor: EYE_CURSOR }}
                 onMouseEnter={() => setHover(i)}
                 onMouseLeave={() => setHover(null)}
               >
@@ -350,28 +360,23 @@ export function RadarChart({ modalidades = MODALIDADES }: { modalidades?: Modali
             const ty = ly < cy - 6 ? "0%" : ly > cy + 6 ? "-100%" : "-50%";
             return (
               <div
-                className="pointer-events-none absolute w-max max-w-[210px] rounded-input border border-line bg-surface p-2.5 text-xs shadow-pop"
+                className="pointer-events-none absolute"
                 style={{
                   left: `${(lx / W) * 100}%`,
                   top: `${(ly / H) * 100}%`,
                   transform: `translate(${tx}, ${ty})`,
                 }}
               >
-                <p className="font-semibold text-ink">{ax.label}</p>
-                <div className="mt-1.5 space-y-1">
-                  {modalidades.map((m, mi) => (
-                    <div key={m.key} className="flex items-center justify-between gap-3">
-                      <span className="flex items-center gap-1.5 text-muted">
-                        <span className="inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: colors[mi] }} />
-                        {m.nombre}
-                      </span>
-                      <span className="font-mono font-semibold tabular-nums" style={{ color: colors[mi] }}>
-                        {valorEje(ax.key, m)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-1.5 text-[0.7rem] leading-snug text-subtle">{AXIS_RAZON[ax.key]}</p>
+                <RadarTooltip
+                  title={ax.label}
+                  reason={AXIS_RAZON[ax.key]}
+                  rows={modalidades.map((m, mi) => ({
+                    key: m.key,
+                    name: m.nombre,
+                    value: valorEje(ax.key, m, fmt),
+                    color: colors[mi],
+                  }))}
+                />
               </div>
             );
           })()}

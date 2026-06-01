@@ -1,6 +1,6 @@
 "use client";
 
-import type { Resultado, ScenarioInput } from "@/lib/calc";
+import { getStrategy, type Resultado, type ScenarioInput } from "@/lib/calc";
 import type { FxState } from "@/lib/useFxRate";
 import { EquivalenceBanner } from "@/components/app/dashboard/EquivalenceBanner";
 import { ModalityCard } from "@/components/app/dashboard/ModalityCard";
@@ -25,6 +25,7 @@ export function Dashboard({
   input: ScenarioInput;
   fx: FxState;
 }) {
+  const money = getStrategy(input.pais).money;
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
       <EquivalenceBanner
@@ -35,27 +36,29 @@ export function Dashboard({
         className="lg:col-span-12"
       />
 
-      <ModalityCard res={tuyo} color="var(--c1)" etiqueta="Tú" active className="lg:col-span-4" />
-      <WaterfallPanel res={tuyo} className="lg:col-span-8" />
+      <ModalityCard res={tuyo} color="var(--c1)" etiqueta="Tú" active money={money} className="lg:col-span-4" />
+      <WaterfallPanel res={tuyo} money={money} className="lg:col-span-8" />
 
       <ModalityCard
         res={equivalente}
         color="var(--c2)"
         etiqueta="Equivalente"
         active={false}
+        money={money}
         className="lg:col-span-4"
       />
-      <WaterfallPanel res={equivalente} className="lg:col-span-8" />
+      <WaterfallPanel res={equivalente} money={money} className="lg:col-span-8" />
 
-      <MonthlyTable tuyo={tuyo} equivalente={equivalente} className="lg:col-span-12" />
+      <MonthlyTable tuyo={tuyo} equivalente={equivalente} pais={input.pais} className="lg:col-span-12" />
 
       {/* Radar (cuadrado, lado = alto de la tabla) + tabla que ocupa el resto */}
       <div className="flex flex-col gap-4 lg:col-span-12 lg:flex-row lg:items-stretch">
         <RadarPanel
           modalidades={[tuyo, equivalente]}
+          money={money}
           className="lg:aspect-square lg:shrink-0"
         />
-        <DetailTable tuyo={tuyo} equivalente={equivalente} className="lg:min-w-0 lg:flex-1" />
+        <DetailTable tuyo={tuyo} equivalente={equivalente} pais={input.pais} className="lg:min-w-0 lg:flex-1" />
       </div>
     </div>
   );

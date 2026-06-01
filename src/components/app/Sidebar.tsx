@@ -5,11 +5,11 @@ import { Card, SegmentedControl, FlagSelect, MoneyInput, InfoDot, Eyebrow, Divid
 import { toast } from "@/components/common/Toast";
 import { HorarioField } from "@/components/app/HorarioField";
 import {
-  CATEGORIA_OPTIONS,
+  getStrategy,
   MONEDA_OPTIONS,
   PAIS_OPTIONS,
   type ScenarioInput,
-  type Categoria,
+  type Rol,
   type TipoCobro,
   type Moneda,
 } from "@/lib/calc";
@@ -50,11 +50,13 @@ export function Sidebar({
 }) {
   const [abierto, setAbierto] = useState(false);
   const [ajustesOpen, setAjustesOpen] = useState(false);
+  const strat = getStrategy(input.pais);
   const usaHora = input.tipoCobro === "hora";
-  const esIndep = input.categoria === "independiente";
+  const esIndep = input.categoria === "informal";
   const symbol = MONEDA_OPTIONS.find((m) => m.value === input.monedaCobro)?.symbol ?? "S/";
-  const catLabel = CATEGORIA_OPTIONS.find((c) => c.value === input.categoria)?.label ?? "";
-  const paisLabel = PAIS_OPTIONS.find((p) => p.value === input.pais)?.label ?? "Perú";
+  const localSymbol = MONEDA_OPTIONS.find((m) => m.value === strat.meta.currency)?.symbol ?? "S/";
+  const catLabel = strat.modalidades[input.categoria].nombre;
+  const paisLabel = strat.meta.label;
   const horasSemana = input.horario.reduce((a, b) => a + b, 0);
   const resumen = `${catLabel} · ${symbol} ${input.monto.toLocaleString("es-PE")} ${input.modo} · ${horasSemana} h/sem`;
 
@@ -86,17 +88,17 @@ export function Sidebar({
         </div>
 
         <div className={cn("mt-5 flex-1 flex-col gap-4", abierto ? "flex" : "hidden lg:flex")}>
-          <Ctrl
-            label="Situación"
-            info="5ta = planilla (dependiente, con grati/CTS/EsSalud). 4ta = honorarios (independiente, más líquido, sin beneficios)."
-          >
+          <Ctrl label="Situación" info={strat.copy.situacionInfo}>
             <SegmentedControl
               aria-label="Categoría"
               value={input.categoria}
-              onChange={(v: Categoria) =>
-                patch(v === "independiente" ? { categoria: v, modo: "bruto" } : { categoria: v })
+              onChange={(v: Rol) =>
+                patch(v === "informal" ? { categoria: v, modo: "bruto" } : { categoria: v })
               }
-              options={CATEGORIA_OPTIONS.map((c) => ({ value: c.value, label: c.label.replace(/\s*\(.*?\)/, "") }))}
+              options={[strat.modalidades.formal, strat.modalidades.informal].map((m) => ({
+                value: m.rol,
+                label: m.nombre,
+              }))}
             />
           </Ctrl>
 
@@ -178,11 +180,8 @@ export function Sidebar({
             />
           </Ctrl>
 
-          {input.categoria === "independiente" && (
-            <Ctrl
-              label="Feriados"
-              info="Solo aplica a independientes (4ta): si lo activas, se descuentan los feriados nacionales de Perú de los días laborables del año. En planilla el sueldo es fijo y no se ve afectado."
-            >
+          {esIndep && (
+            <Ctrl label="Feriados" info={strat.copy.feriadosInfo}>
               <label className="flex cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5">
                 <span className="text-[0.95rem] text-muted">Descontar feriados</span>
                 <Toggle
@@ -202,11 +201,8 @@ export function Sidebar({
             </Ctrl>
           )}
 
-          {input.categoria === "independiente" && (
-            <Ctrl
-              label="Seguro privado"
-              info="Solo 4ta: a diferencia de planilla (EsSalud), el independiente costea su salud. Si lo activas, el costo se descuenta de tu liquidez y se valoriza como cobertura de salud."
-            >
+          {esIndep && (
+            <Ctrl label="Seguro privado" info={strat.copy.seguroInfo}>
               <label className="flex cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5">
                 <span className="text-[0.95rem] text-muted">Pago seguro privado</span>
                 <Toggle
@@ -224,11 +220,11 @@ export function Sidebar({
               {input.seguroPrivado && (
                 <div className="relative mt-2">
                   <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">
-                    S/
+                    {localSymbol}
                   </span>
                   <MoneyInput
                     className="pl-9"
-                    aria-label="Costo mensual del seguro privado en soles"
+                    aria-label="Costo mensual del seguro privado"
                     value={input.seguroPrivadoMonto ?? 0}
                     onChange={(seguroPrivadoMonto) => patch({ seguroPrivadoMonto })}
                   />

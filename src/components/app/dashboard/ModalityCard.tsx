@@ -1,5 +1,5 @@
 import { Card, Divider, Metric, Pill } from "@/components/common";
-import { money, pct } from "@/lib/sample";
+import { pct, type MoneyFn } from "@/lib/sample";
 import type { Resultado } from "@/lib/calc";
 import { cn } from "@/lib/cn";
 
@@ -23,12 +23,14 @@ export function ModalityCard({
   color,
   etiqueta,
   active,
+  money,
   className,
 }: {
   res: Resultado;
   color: string;
   etiqueta: string;
   active: boolean;
+  money: MoneyFn;
   className?: string;
 }) {
   // El tamaño de las cifras protagonistas se adapta a su longitud para que dos

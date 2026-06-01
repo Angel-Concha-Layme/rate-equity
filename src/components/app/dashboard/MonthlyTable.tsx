@@ -1,28 +1,31 @@
 import { Card } from "@/components/common";
-import { money } from "@/lib/sample";
-import type { Resultado } from "@/lib/calc";
+import { getStrategy, type Resultado } from "@/lib/calc";
 import { PanelHeader } from "@/components/app/dashboard/PanelHeader";
 import { cn } from "@/lib/cn";
 
 const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
 /**
- * Salario mes a mes comparado (Independiente vs Planilla). El líquido del
- * independiente varía con los días/horas laborables de cada mes (y su retención
- * de 8%); el de planilla es estable, con gratificación en julio y diciembre.
+ * Salario mes a mes comparado (rol informal vs formal). El líquido del rol
+ * informal varía con los días/horas laborables de cada mes (y su retención);
+ * el del formal es estable, con extras en los meses de gratificación.
  */
 export function MonthlyTable({
   tuyo,
   equivalente,
+  pais,
   className,
 }: {
   tuyo: Resultado;
   equivalente: Resultado;
+  pais: string;
   className?: string;
 }) {
+  const strat = getStrategy(pais);
+  const money = strat.money;
   const pair = [tuyo, equivalente];
-  const indep = pair.find((r) => r.key === "independiente");
-  const plan = pair.find((r) => r.key === "planilla");
+  const indep = pair.find((r) => r.rol === "informal");
+  const plan = pair.find((r) => r.rol === "formal");
   if (!indep || !plan) return null;
 
   const year = new Date().getFullYear();
@@ -46,13 +49,13 @@ export function MonthlyTable({
               <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider">
                 <span className="inline-flex items-center gap-2 text-ink">
                   <span className="inline-block size-2 rounded-full" style={{ background: "var(--c2)" }} />
-                  Independiente
+                  {strat.modalidades.informal.nombre}
                 </span>
               </th>
               <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider">
                 <span className="inline-flex items-center gap-2 text-ink">
                   <span className="inline-block size-2 rounded-full" style={{ background: "var(--c1)" }} />
-                  Planilla
+                  {strat.modalidades.formal.nombre}
                 </span>
               </th>
             </tr>

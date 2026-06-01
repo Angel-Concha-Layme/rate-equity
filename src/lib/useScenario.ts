@@ -29,11 +29,22 @@ function persist(input: ScenarioInput) {
   }
 }
 
+// Mapea valores legacy de `categoria` (claves peruanas) a los roles canónicos.
+const ROL_LEGACY: Record<string, ScenarioInput["categoria"]> = {
+  planilla: "formal",
+  independiente: "informal",
+};
+
+function normalizar(input: ScenarioInput): ScenarioInput {
+  const legacy = ROL_LEGACY[input.categoria as string];
+  return legacy ? { ...input, categoria: legacy } : input;
+}
+
 function hydrateFromCache() {
   let input = state.input;
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) input = { ...input, ...(JSON.parse(raw) as Partial<ScenarioInput>) };
+    if (raw) input = normalizar({ ...input, ...(JSON.parse(raw) as Partial<ScenarioInput>) });
   } catch {
     /* cache no disponible o corrupta: usamos defaults */
   }

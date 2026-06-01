@@ -13,10 +13,10 @@ import {
   Pill,
 } from "@/components/common";
 import {
+  getStrategy,
   PAIS_OPTIONS,
   MONEDA_OPTIONS,
   type ScenarioInput,
-  type Categoria,
   type TipoCobro,
   type Moneda,
 } from "@/lib/calc";
@@ -29,23 +29,6 @@ const PASOS = [
   {
     titulo: "¿Cuánto y en qué moneda cobras?",
     sub: "Asumimos que es tu monto bruto; si no es Soles, convertimos al tipo de cambio del día.",
-  },
-];
-
-const CATS: { value: Categoria; title: string; sub: string; desc: string; info: string }[] = [
-  {
-    value: "planilla",
-    title: "Planilla",
-    sub: "5ta categoría",
-    desc: "Dependiente, en planilla. Incluye gratificaciones, CTS, EsSalud y AFP.",
-    info: "Renta de 5ta: el empleador retiene impuestos y aporta beneficios. Menos líquido, más estable.",
-  },
-  {
-    value: "independiente",
-    title: "Independiente",
-    sub: "4ta categoría",
-    desc: "Recibos por honorarios. Más líquido, sin beneficios automáticos.",
-    info: "Renta de 4ta: tú asumes pensión y salud. Más liquidez de portada, pero sin grati ni CTS.",
   },
 ];
 
@@ -66,6 +49,14 @@ export function Wizard({
   onDone: () => void;
   onCancel: () => void;
 }) {
+  const strat = getStrategy(input.pais);
+  const cats = [strat.modalidades.formal, strat.modalidades.informal].map((m) => ({
+    value: m.rol,
+    title: m.nombre,
+    sub: m.wizard.sub,
+    desc: m.wizard.desc,
+    info: m.wizard.info,
+  }));
   const usaHora = input.tipoCobro === "hora";
   const moneda = MONEDA_OPTIONS.find((m) => m.value === input.monedaCobro);
   const symbol = moneda?.symbol ?? "S/";
@@ -111,7 +102,7 @@ export function Wizard({
                 }))}
               />
               <p className="mt-2 flex items-center gap-1.5 text-xs text-subtle">
-                Por ahora calculamos con tasas de Perú 2026.
+                {strat.copy.wizardPaisNota}
                 <InfoDot content="Más países pronto. El motor está diseñado para añadir nuevas jurisdicciones." />
               </p>
             </Field>
@@ -120,7 +111,7 @@ export function Wizard({
           {/* Paso 2: categoría */}
           {paso === 1 && (
             <div className="grid gap-4 sm:grid-cols-2">
-              {CATS.map((c) => {
+              {cats.map((c) => {
                 const active = input.categoria === c.value;
                 return (
                   <button
