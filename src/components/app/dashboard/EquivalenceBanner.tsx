@@ -25,6 +25,7 @@ export function EquivalenceBanner({
   const localLabel = CURRENCY_OPTIONS.find((m) => m.value === localCurrency)?.label ?? localCurrency;
 
   const averageRises = yours.monthlyAverage - yours.net > yours.net * 0.04;
+  const hasExpenses = !!yours.monthlyExpenses;
 
   return (
     <Card className={cn("p-5", className)}>
@@ -57,6 +58,13 @@ export function EquivalenceBanner({
           </>
         )}
       </p>
+      {hasExpenses && (
+        <p className="mt-2 text-muted">
+          Tras tus <strong className="text-ink">gastos fijos de {money(yours.monthlyExpenses ?? 0)}/mes</strong>, te
+          quedan <strong className="text-accent">{money(yours.disposable ?? 0)}</strong> disponibles
+          {" "}(vs <strong className="text-ink">{money(equivalent.disposable ?? 0)}</strong> en la otra modalidad).
+        </p>
+      )}
       {input.billingCurrency !== localCurrency && (
         <p className="mt-2 text-xs text-subtle">
           Convertido de {input.billingCurrency} a {localLabel} al tipo de cambio referencial{" "}

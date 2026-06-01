@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Card, SegmentedControl, FlagSelect, MoneyInput, InfoDot, Eyebrow, Divider, Toggle, Modal } from "@/components/common";
 import { toast } from "@/components/common/Toast";
 import { ScheduleField } from "@/components/app/ScheduleField";
+import { ExpensesField } from "@/components/app/ExpensesField";
+import { defaultExpenses } from "@/lib/expenses";
 import {
   getStrategy,
   CURRENCY_OPTIONS,
@@ -275,20 +277,33 @@ export function Sidebar({
       </Card>
 
       <Modal open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Ajustes avanzados">
-        <Ctrl label="País">
-          <FlagSelect
-            aria-label="País"
-            value={input.country}
-            onChange={(country) => patch({ country })}
-            options={COUNTRY_OPTIONS.map((p) => ({
-              value: p.value,
-              label: p.label,
-              flag: p.flag,
-              disabled: p.disabled,
-            }))}
-          />
-        </Ctrl>
-        <p className="mt-3 text-xs text-subtle">Más países próximamente.</p>
+        <div className="flex flex-col gap-4">
+          <Ctrl label="País">
+            <FlagSelect
+              aria-label="País"
+              value={input.country}
+              onChange={(country) => patch({ country })}
+              options={COUNTRY_OPTIONS.map((p) => ({
+                value: p.value,
+                label: p.label,
+                flag: p.flag,
+                disabled: p.disabled,
+              }))}
+            />
+            <p className="mt-1.5 text-xs text-subtle">Más países próximamente.</p>
+          </Ctrl>
+
+          <Ctrl
+            label="Gastos mensuales"
+            info={`Gastos fijos del mes en moneda local (${localSymbol}). Reducen tu liquidez disponible; el valor económico total no cambia. Solo cuentan los que tengan un monto.`}
+          >
+            <ExpensesField
+              expenses={input.expenses ?? defaultExpenses()}
+              onChange={(expenses) => patch({ expenses })}
+              currencySymbol={localSymbol}
+            />
+          </Ctrl>
+        </div>
       </Modal>
     </aside>
   );

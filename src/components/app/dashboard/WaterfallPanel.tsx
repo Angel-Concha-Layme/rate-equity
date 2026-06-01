@@ -15,9 +15,10 @@ export function WaterfallPanel({
   money: MoneyFn;
   className?: string;
 }) {
+  const destination = res.monthlyExpenses ? "disponible" : "valor total";
   return (
     <Card className={cn("flex flex-col p-5", className)}>
-      <PanelHeader title={`Del bruto al valor total · ${res.name}`} type="Waterfall" />
+      <PanelHeader title={`Del bruto al ${destination} · ${res.name}`} type="Waterfall" />
       {/* relative + absolute svg: the chart fills the row height (defined by the
           ModalityCard) without contributing its own height to layout. */}
       <div className="relative min-h-0 flex-1">

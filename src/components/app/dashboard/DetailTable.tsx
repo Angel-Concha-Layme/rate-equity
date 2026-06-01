@@ -16,9 +16,11 @@ export function DetailTable({
   className?: string;
 }) {
   const strategy = getStrategy(country);
+  const money = strategy.money;
   const rows = strategy.detailRows();
-  const fmt = { money: strategy.money, pct };
+  const fmt = { money, pct };
   const cols = [yours, equivalent];
+  const hasExpenses = !!yours.monthlyExpenses;
   return (
     <Card className={cn("overflow-hidden", className)}>
       <div className="overflow-x-auto">
@@ -67,6 +69,26 @@ export function DetailTable({
                 ))}
               </tr>
             ))}
+            {hasExpenses && (
+              <>
+                <tr className="border-b border-line">
+                  <td className="px-5 py-3 text-sm text-muted">Gastos fijos / mes</td>
+                  {cols.map((x) => (
+                    <td key={x.key} className="px-5 py-3 text-right font-mono text-sm tabular-nums text-loss">
+                      {money(x.monthlyExpenses ?? 0)}
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-line bg-canvas-2 last:border-0">
+                  <td className="px-5 py-3 text-sm font-semibold text-ink">Disponible / mes</td>
+                  {cols.map((x) => (
+                    <td key={x.key} className="px-5 py-3 text-right font-mono text-sm font-bold tabular-nums text-ink">
+                      {money(x.disposable ?? 0)}
+                    </td>
+                  ))}
+                </tr>
+              </>
+            )}
           </tbody>
         </table>
       </div>

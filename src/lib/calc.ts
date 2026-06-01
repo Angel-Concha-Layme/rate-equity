@@ -1,10 +1,11 @@
 import { workTime } from "./calendar";
 import { CURRENCY_OPTIONS, type CurrencyCode } from "./currency";
 import { getStrategy, COUNTRY_OPTIONS } from "./countries";
+import { applyExpenses, defaultExpenses, totalMonthlyExpenses, type Expense } from "./expenses";
 import type { MonthResult, Result, Role } from "./countries/types";
 
 export { CURRENCY_OPTIONS, COUNTRY_OPTIONS, getStrategy };
-export type { CurrencyCode, Role, Result, MonthResult };
+export type { CurrencyCode, Role, Result, MonthResult, Expense };
 
 /**
  * RateEquity core: country-agnostic orchestrator. It resolves the strategy from
@@ -41,6 +42,7 @@ export interface ScenarioInput {
   deductHolidays?: boolean; // subtract national holidays from working days
   privateInsurance?: boolean; // informal only: pays for private health insurance
   privateInsuranceAmount?: number; // monthly cost of the private insurance, in local currency
+  expenses?: Expense[]; // monthly fixed expenses, in local currency (general feature)
   wizardDone?: boolean; // already completed the initial wizard
 }
 
@@ -55,6 +57,7 @@ export const DEFAULT_SCENARIO: ScenarioInput = {
   deductHolidays: false,
   privateInsurance: false,
   privateInsuranceAmount: 190, // default PE tier; readjusted by liquidity when enabled
+  expenses: defaultExpenses(),
   wizardDone: false,
 };
 
@@ -153,6 +156,12 @@ export function computeScenario(input: ScenarioInput): ScenarioResult {
     m.radar.totalComp = round((m.annual.totalValue / maxComp) * 100);
     m.radar.benefits = round((m.annual.benefits / maxBen) * 100);
   });
+
+  // Fixed monthly expenses (already in local currency) apply equally to both
+  // modalities: they reduce the disposable bottom line without altering the
+  // economic-value comparison used for the equivalence.
+  const monthlyExpenses = totalMonthlyExpenses(input.expenses ?? []);
+  pair.forEach((m) => applyExpenses(m, monthlyExpenses));
 
   return { yours, equivalent, year };
 }
