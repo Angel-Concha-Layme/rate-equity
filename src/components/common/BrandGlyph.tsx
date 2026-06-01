@@ -108,6 +108,24 @@ export function BrandGlyph({
           <path d="M12 3l7.5 4.5v9L12 21l-7.5-4.5v-9z" />
         </svg>
       );
+    case "bolt":
+      return (
+        <svg {...base} fill="currentColor" stroke="currentColor" strokeWidth={1.2}>
+          <path d="M13 2 4 13.5h5.5L8 22l9-12h-5.5z" />
+        </svg>
+      );
+    case "wave":
+      return (
+        <svg {...base} strokeWidth={2.4}>
+          <path d="M3 14c3-5.5 6-5.5 9 0s6 5.5 9 0" />
+        </svg>
+      );
+    case "star":
+      return (
+        <svg {...base} fill="currentColor" stroke="currentColor" strokeWidth={1}>
+          <path d="M12 3.2l2.5 5.6 6.1.6-4.6 4 1.4 6L12 16.9 6.6 19.4 8 13.4l-4.6-4 6.1-.6z" />
+        </svg>
+      );
     case "ledger":
     default:
       return (

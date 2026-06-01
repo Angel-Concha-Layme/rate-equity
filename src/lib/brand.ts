@@ -11,7 +11,10 @@ export type GlyphKind =
   | "north"
   | "abacus"
   | "sol"
-  | "hex";
+  | "hex"
+  | "bolt"
+  | "wave"
+  | "star";
 
 export type MarkStyle = "tile" | "outline" | "plain";
 
