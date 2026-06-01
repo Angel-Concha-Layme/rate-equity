@@ -27,17 +27,17 @@ export function Dashboard({
 }) {
   const money = getStrategy(input.country).money;
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 3xl:grid-cols-15">
       <EquivalenceBanner
         yours={yours}
         equivalent={equivalent}
         input={input}
         fx={fx}
-        className="lg:col-span-12"
+        className="lg:col-span-12 3xl:col-span-15"
       />
 
-      <ModalityCard res={yours} color="var(--c1)" label="Tú" active money={money} className="lg:col-span-4" />
-      <WaterfallPanel res={yours} money={money} className="lg:col-span-8" />
+      <ModalityCard res={yours} color="var(--c1)" label="Tú" active money={money} className="lg:col-span-3" />
+      <WaterfallPanel res={yours} money={money} className="lg:col-span-9 3xl:col-span-12" />
 
       <ModalityCard
         res={equivalent}
@@ -45,14 +45,19 @@ export function Dashboard({
         label="Equivalente"
         active={false}
         money={money}
-        className="lg:col-span-4"
+        className="lg:col-span-3"
       />
-      <WaterfallPanel res={equivalent} money={money} className="lg:col-span-8" />
+      <WaterfallPanel res={equivalent} money={money} className="lg:col-span-9 3xl:col-span-12" />
 
-      <MonthlyTable yours={yours} equivalent={equivalent} country={input.country} className="lg:col-span-12" />
+      <MonthlyTable
+        yours={yours}
+        equivalent={equivalent}
+        country={input.country}
+        className="lg:col-span-12 3xl:col-span-15"
+      />
 
       {/* Radar (square, side = table height) + table taking the rest */}
-      <div className="flex flex-col gap-4 lg:col-span-12 lg:flex-row lg:items-stretch">
+      <div className="flex flex-col gap-4 lg:col-span-12 3xl:col-span-15 lg:flex-row lg:items-stretch">
         <RadarPanel
           modalities={[yours, equivalent]}
           money={money}

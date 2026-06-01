@@ -16,7 +16,6 @@ export function DashboardView({
   fx,
   yours,
   equivalent,
-  suggestedInsurance,
   onReopenWizard,
   onReset,
 }: {
@@ -25,7 +24,6 @@ export function DashboardView({
   fx: FxState;
   yours: Result;
   equivalent: Result;
-  suggestedInsurance: number;
   onReopenWizard: () => void;
   onReset: () => void;
 }) {
@@ -35,7 +33,6 @@ export function DashboardView({
         input={input}
         patch={patch}
         fx={fx}
-        suggestedInsurance={suggestedInsurance}
         onReopenWizard={onReopenWizard}
         onReset={onReset}
       />

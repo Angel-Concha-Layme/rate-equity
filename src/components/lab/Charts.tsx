@@ -103,22 +103,26 @@ function stepColor(kind: BreakdownStep["kind"]): string {
 
 export function WaterfallChart({
   steps,
-  className = "block h-auto w-full",
+  className = "block h-auto mx-auto",
   money: fmt = money,
 }: {
   steps: BreakdownStep[];
   className?: string;
   money?: MoneyFn;
 }) {
-  const W = 760;
   const H = 268;
   const PL = 16;
   const PR = 16;
   const PT = 40;
   const PB = 50;
+  // Width is driven by the number of bars: each gets a fixed slot wide enough
+  // for its bottom label (no overlap). The chart is centered and capped to the
+  // card width (max-w-full), so it only takes the horizontal space it needs.
+  const SLOT = 100;
+  const n = steps.length;
+  const W = PL + PR + n * SLOT;
   const innerW = W - PL - PR;
   const innerH = H - PT - PB;
-  const n = steps.length;
   const slot = innerW / n;
   const barW = Math.min(62, slot * 0.56);
 
@@ -130,17 +134,29 @@ export function WaterfallChart({
     const s = steps[i];
     let y0n: number, y1n: number, runAfter: number;
     if (s.kind === "start" || s.kind === "subtotal" || s.kind === "total") {
-      run = s.amount;
       y0n = 0;
-      y1n = run;
-      runAfter = run;
+      y1n = s.amount;
+      // A branch absolute step (e.g. "Disponible") is shown but keeps the main
+      // running total at its current value so following steps continue from it.
+      if (s.branch) {
+        runAfter = run;
+      } else {
+        run = s.amount;
+        runAfter = run;
+      }
     } else {
       const st = run;
       const en = run + s.amount;
       y0n = Math.min(st, en);
       y1n = Math.max(st, en);
-      run = en;
-      runAfter = en;
+      // A branch delta (e.g. "Gastos fijos") hangs from the line without
+      // reducing the main running total.
+      if (s.branch) {
+        runAfter = run;
+      } else {
+        run = en;
+        runAfter = en;
+      }
     }
     bars.push({ ...s, y0n, y1n, runAfter, cx: PL + slot * (i + 0.5) });
   }
@@ -155,6 +171,7 @@ export function WaterfallChart({
       role="img"
       aria-label="Desglose en cascada del bruto al neto y compensación total"
       className={className}
+      style={{ width: W, maxWidth: "100%" }}
     >
       {/* baseline */}
       <line x1={PL} y1={y(0)} x2={W - PR} y2={y(0)} stroke="var(--chart-axis)" strokeWidth="1" />

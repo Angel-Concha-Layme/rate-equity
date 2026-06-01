@@ -15,14 +15,13 @@ export function WaterfallPanel({
   money: MoneyFn;
   className?: string;
 }) {
-  const destination = res.monthlyExpenses ? "disponible" : "valor total";
   return (
     <Card className={cn("flex flex-col p-5", className)}>
-      <PanelHeader title={`Del bruto al ${destination} · ${res.name}`} type="Waterfall" />
-      {/* relative + absolute svg: the chart fills the row height (defined by the
-          ModalityCard) without contributing its own height to layout. */}
-      <div className="relative min-h-0 flex-1">
-        <WaterfallChart steps={res.breakdown} money={money} className="absolute inset-0 h-full w-full" />
+      <PanelHeader title={`Del bruto al valor total · ${res.name}`} type="Waterfall" />
+      {/* The chart takes only the horizontal space it needs (so labels don't
+          overlap), centered within the card. */}
+      <div className="flex min-h-0 flex-1 items-center justify-center">
+        <WaterfallChart steps={res.breakdown} money={money} />
       </div>
     </Card>
   );

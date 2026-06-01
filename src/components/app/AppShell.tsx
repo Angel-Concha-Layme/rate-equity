@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useScenario } from "@/lib/useScenario";
 import { useFxRate } from "@/lib/useFxRate";
-import { computeScenario, suggestedPrivateInsurance } from "@/lib/calc";
+import { computeScenario } from "@/lib/calc";
 import { LandingHero } from "@/components/app/LandingHero";
 import { Wizard } from "@/components/app/Wizard";
 import { DashboardView } from "@/components/app/DashboardView";
@@ -28,14 +28,6 @@ export function AppShell() {
     [input, fx.rate],
   );
   const { yours, equivalent } = useMemo(() => computeScenario(inputPEN), [inputPEN]);
-
-  // Suggested insurance tier based on liquidity WITHOUT insurance (in soles).
-  // Stable against the toggle state; used to autofill the amount when enabling it.
-  const suggestedInsurance = useMemo(() => {
-    if (inputPEN.category !== "informal") return 0;
-    const base = computeScenario({ ...inputPEN, privateInsurance: false }).yours.net;
-    return suggestedPrivateInsurance(inputPEN.country, base);
-  }, [inputPEN]);
 
   if (phase === "landing") {
     return (
@@ -74,7 +66,6 @@ export function AppShell() {
       fx={fx}
       yours={yours}
       equivalent={equivalent}
-      suggestedInsurance={suggestedInsurance}
       onReopenWizard={() => {
         setStep(0);
         setPhase("wizard");

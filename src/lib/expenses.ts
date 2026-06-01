@@ -22,6 +22,7 @@ export interface Expense {
 /** Opinionated default categories shown in the editor (amount left at 0). */
 export const EXPENSE_SUGGESTIONS: { id: string; label: string }[] = [
   { id: "rent", label: "Alquiler" },
+  { id: "health", label: "Seguro de salud" },
   { id: "food", label: "Alimentación" },
   { id: "transport", label: "Transporte" },
   { id: "utilities", label: "Servicios (luz, agua, internet)" },
@@ -32,6 +33,21 @@ export const EXPENSE_SUGGESTIONS: { id: string; label: string }[] = [
 /** Default expense list: the suggestions with no amount set. */
 export function defaultExpenses(): Expense[] {
   return EXPENSE_SUGGESTIONS.map((s) => ({ ...s, amount: 0 }));
+}
+
+/**
+ * Reconciles a (possibly cached) expense list with the current suggestions.
+ * Ensures every suggested category is present — so newly added suggestions show
+ * up for users with persisted state — while preserving any amounts they already
+ * entered and keeping their custom rows. Suggested rows follow the canonical
+ * suggestion order; custom/unknown rows are appended afterwards.
+ */
+export function reconcileExpenses(expenses: Expense[]): Expense[] {
+  const byId = new Map(expenses.map((e) => [e.id, e]));
+  const suggested = EXPENSE_SUGGESTIONS.map((s) => byId.get(s.id) ?? { ...s, amount: 0 });
+  const suggestedIds = new Set(EXPENSE_SUGGESTIONS.map((s) => s.id));
+  const extras = expenses.filter((e) => !suggestedIds.has(e.id));
+  return [...suggested, ...extras];
 }
 
 /** Only expenses with a positive amount are counted. */
@@ -46,25 +62,32 @@ export function totalMonthlyExpenses(expenses: Expense[]): number {
 
 /**
  * Applies the monthly expenses (already in local currency) to a modeled result,
- * in place. The economic comparison (total value) is unchanged; expenses are a
- * personal cash outflow shown as the final descent of the waterfall toward the
- * disposable figure (`disposable = totalComp - monthlyExpenses`).
+ * in place. Expenses reduce the net liquidity, not the total value:
+ *   disposable = net − expenses
+ * The total value (net + benefits) is left untouched, so the equivalence
+ * comparison is unaffected. In the waterfall the expenses are a branch that
+ * dips from "Líquido" down to "Disponible" without altering the main flow, so
+ * the benefits still build up from the net to the (unchanged) total value.
  */
 export function applyExpenses(result: Result, monthlyExpenses: number): Result {
-  result.monthlyExpenses = Math.round(monthlyExpenses);
-  result.disposable = Math.round(result.totalComp - monthlyExpenses);
+  const expenses = Math.round(monthlyExpenses);
+  result.monthlyExpenses = expenses;
+  result.disposable = result.net - expenses;
 
-  if (monthlyExpenses <= 0) return result;
+  if (expenses <= 0) return result;
 
-  // Demote the existing closing "total" step to a subtotal, then append the
-  // expenses block and the new "Disponible" total so the running sum stays
-  // consistent (total value − expenses).
-  const steps: BreakdownStep[] = result.breakdown.map((s) =>
-    s.kind === "total" ? { ...s, kind: "subtotal" } : s,
-  );
-  steps.push({ label: "Gastos fijos", amount: -result.monthlyExpenses, kind: "dec" });
-  steps.push({ label: "Disponible", amount: result.disposable, kind: "total" });
-  result.breakdown = steps;
+  // The net is the first subtotal ("Líquido"); insert the expenses branch right
+  // after it. Branch steps are shown but do not carry into the running total,
+  // so the benefit steps that follow still climb from the net.
+  const steps = result.breakdown;
+  const netIdx = steps.findIndex((s) => s.kind === "subtotal");
+  if (netIdx === -1) return result;
+
+  const block: BreakdownStep[] = [
+    { label: "Gastos fijos", amount: -expenses, kind: "dec", branch: true },
+    { label: "Disponible", amount: steps[netIdx].amount - expenses, kind: "subtotal", branch: true },
+  ];
+  result.breakdown = [...steps.slice(0, netIdx + 1), ...block, ...steps.slice(netIdx + 1)];
 
   return result;
 }

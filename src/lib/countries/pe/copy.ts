@@ -52,7 +52,7 @@ export const DETAIL_ROWS_PE: DetailRow[] = [
   { label: "Ingreso total anual", get: (x, f) => f.money(x.annual.totalIncome), sub: true },
   { label: "Impuesto a la renta anual", get: (x, f) => f.money(x.annual.tax), tone: "loss", sub: true },
   { label: "Pensión (AFP) anual", get: (x, f) => f.money(x.annual.pension), sub: true },
-  { label: "Salud (EsSalud / seguro) anual", get: (x, f) => f.money(x.annual.health), sub: true },
+  { label: "Salud (EsSalud) anual", get: (x, f) => f.money(x.annual.health), sub: true },
   { label: "Beneficios (grati + CTS) anual", get: (x, f) => f.money(x.annual.benefits), tone: "profit", sub: true },
   { label: "Valor económico total anual", get: (x, f) => f.money(x.annual.totalValue), emphasis: true, sub: true },
 ];
@@ -62,8 +62,6 @@ export const COPY_PE: CountryCopy = {
     "5ta = planilla (dependiente, con grati/CTS/EsSalud). 4ta = honorarios (independiente, más líquido, sin beneficios).",
   holidaysInfo:
     "Solo aplica a independientes (4ta): si lo activas, se descuentan los feriados nacionales de Perú de los días laborables del año. En planilla el sueldo es fijo y no se ve afectado.",
-  insuranceInfo:
-    "Solo 4ta: a diferencia de planilla (EsSalud), el independiente costea su salud. Si lo activas, el costo se descuenta de tu liquidez y se valoriza como cobertura de salud.",
   landingTagline: "Planilla (5ta) o Independiente (4ta)",
   wizardCountryNote: "Por ahora calculamos con tasas de Perú 2026.",
 };

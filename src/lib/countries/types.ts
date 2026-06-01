@@ -96,7 +96,6 @@ export interface CountryMeta {
 export interface CountryCopy {
   situationInfo: string; // help for the situation selector (sidebar)
   holidaysInfo: string; // help for the holidays toggle
-  insuranceInfo: string; // help for the private insurance toggle
   landingTagline: string; // landing subtitle
   wizardCountryNote: string; // note for the country step in the wizard
 }
@@ -108,7 +107,6 @@ export interface ModelArgs {
   monthlyFraction: number[];
   time: WorkTime;
   year: number;
-  annualInsurance?: number;
 }
 
 /** A country's strategy: models the calculation and provides labels/copy/holidays. */
@@ -125,10 +123,6 @@ export interface CountryStrategy {
   model(a: ModelArgs): Result;
   /** Rows of the annual detail table (country-specific labels). */
   detailRows(): DetailRow[];
-  /** Monthly price tiers of private health insurance (local currency). */
-  insuranceTiers(): number[];
-  /** Suggested insurance tier based on monthly liquidity. */
-  suggestedInsurance(monthlyLiquidity: number): number;
   /** Local currency formatter. */
   money: MoneyFn;
   copy: CountryCopy;

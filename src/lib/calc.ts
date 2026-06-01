@@ -40,8 +40,6 @@ export interface ScenarioInput {
   schedule: number[]; // hours per day [Mon..Sun]
   billingCurrency: CurrencyCode; // currency billed in; converted to the country's local one
   deductHolidays?: boolean; // subtract national holidays from working days
-  privateInsurance?: boolean; // informal only: pays for private health insurance
-  privateInsuranceAmount?: number; // monthly cost of the private insurance, in local currency
   expenses?: Expense[]; // monthly fixed expenses, in local currency (general feature)
   wizardDone?: boolean; // already completed the initial wizard
 }
@@ -55,24 +53,12 @@ export const DEFAULT_SCENARIO: ScenarioInput = {
   schedule: [8, 8, 8, 8, 8, 0, 0],
   billingCurrency: "PEN",
   deductHolidays: false,
-  privateInsurance: false,
-  privateInsuranceAmount: 190, // default PE tier; readjusted by liquidity when enabled
   expenses: defaultExpenses(),
   wizardDone: false,
 };
 
 /** Local currency of the country (the currency in which the engine expresses results). */
 export const localCurrencyOf = (country: string): CurrencyCode => getStrategy(country).meta.currency;
-
-/** Private insurance tiers available for the country (empty if no data). */
-export function privateInsuranceTiers(country: string): number[] {
-  return getStrategy(country).insuranceTiers();
-}
-
-/** Default suggested insurance tier based on monthly liquidity. */
-export function suggestedPrivateInsurance(country: string, monthlyLiquidity: number): number {
-  return getStrategy(country).suggestedInsurance(monthlyLiquidity);
-}
 
 export interface ScenarioResult {
   yours: Result;
@@ -104,10 +90,6 @@ export function computeScenario(input: ScenarioInput): ScenarioResult {
 
   const yourTime = timeOf(role);
 
-  // Private insurance only applies to the informal role (covers its own health).
-  const annualInsurance =
-    role === "informal" && input.privateInsurance ? Math.max(0, input.privateInsuranceAmount ?? 0) * 12 : 0;
-
   // fraction of the annual income corresponding to each month (per your role)
   const fractionByHours =
     yourTime.totalHours > 0
@@ -117,7 +99,7 @@ export function computeScenario(input: ScenarioInput): ScenarioResult {
   const yourFraction = usesHourly ? fractionByHours : uniformFraction;
 
   const model = (r: Role, annualIncome: number, fraction: number[]) =>
-    strategy.model({ role: r, annualIncome, monthlyFraction: fraction, time: timeOf(r), year, annualInsurance });
+    strategy.model({ role: r, annualIncome, monthlyFraction: fraction, time: timeOf(r), year });
 
   // Roles that bill gross are always expressed in gross; net mode only applies
   // to roles with payroll withholding.
