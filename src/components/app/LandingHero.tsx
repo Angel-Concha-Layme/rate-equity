@@ -2,6 +2,7 @@
 
 import { Button, Card, Eyebrow } from "@/components/common";
 import { getStrategy } from "@/lib/calc";
+import { BRAND } from "@/lib/brand";
 
 const WHAT_IT_DOES = [
   { n: "01", t: "Liquidez real", d: "Lo que de verdad te queda al mes, después de impuestos y aportes." },
@@ -19,7 +20,7 @@ export function LandingHero({ onStart, onExample }: { onStart: () => void; onExa
           Compara el <span className="text-accent">valor económico real</span> de tu trabajo.
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-          {strategy.copy.landingTagline}: el bruto engaña. RateEquity calcula tu liquidez real,
+          {strategy.copy.landingTagline}: el bruto engaña. {BRAND.name} calcula tu liquidez real,
           beneficios, costo para la empresa, impuestos y tu valor por hora, para {strategy.meta.label}{" "}
           con tasas 2026.
         </p>

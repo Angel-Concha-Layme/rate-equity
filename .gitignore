@@ -36,6 +36,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# rebrand deliverable: proposal screenshots (kept in working tree, not committed)
+/propuestas/
+
+# skills tooling artifacts
+/.agents/
+/skills-lock.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -133,6 +133,9 @@
   --c5: #b23420;
   --chart-grid: #ece6d8;
   --chart-axis: #c8bda3;
+
+  --tex: repeating-linear-gradient(to bottom, transparent 0 31px, rgba(28, 26, 20, 0.035) 31px 32px),
+    radial-gradient(120% 80% at 100% 0%, rgba(154, 106, 28, 0.06), transparent 60%);
 }
 
 /* B: Terminal Nocturno · oscuro OLED · quant */
@@ -176,6 +179,12 @@
   --c5: #fb7185;
   --chart-grid: rgba(255, 255, 255, 0.07);
   --chart-axis: rgba(255, 255, 255, 0.2);
+
+  --tex: radial-gradient(90% 60% at 80% -10%, rgba(45, 212, 191, 0.1), transparent 60%),
+    radial-gradient(70% 50% at 0% 0%, rgba(59, 130, 246, 0.09), transparent 55%),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  --tex-size: auto, auto, 44px 44px, 44px 44px;
 }
 
 /* C: Claro · claro · humano / cercano */
@@ -218,6 +227,9 @@
   --c5: #f43f5e;
   --chart-grid: #e1efe7;
   --chart-axis: #bcd6c9;
+
+  --tex: radial-gradient(60% 50% at 12% 0%, rgba(16, 185, 129, 0.13), transparent 55%),
+    radial-gradient(55% 45% at 95% 12%, rgba(251, 113, 56, 0.13), transparent 55%);
 }
 
 /* ------------------------------------------------------------------ *

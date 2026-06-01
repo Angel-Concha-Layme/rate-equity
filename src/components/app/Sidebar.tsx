@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card, SegmentedControl, FlagSelect, MoneyInput, InfoDot, Eyebrow, Divider, Toggle, Modal } from "@/components/common";
+import { BrandMark } from "@/components/common/BrandMark";
 import { toast } from "@/components/common/Toast";
 import { ScheduleField } from "@/components/app/ScheduleField";
 import { ExpensesField } from "@/components/app/ExpensesField";
@@ -64,10 +65,8 @@ export function Sidebar({
   return (
     <aside className="min-w-0 lg:sticky lg:top-0 lg:h-screen lg:py-5">
       <Card className="flex h-full min-h-0 flex-col overflow-y-auto p-5">
-        <div className="mb-5 flex items-baseline justify-between gap-2">
-          <span className="font-display text-2xl font-bold tracking-tight text-ink">
-            Rate<span className="text-accent">Equity</span>
-          </span>
+        <div className="mb-5 flex items-center justify-between gap-2">
+          <BrandMark />
           <span className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-subtle">{countryLabel}</span>
         </div>
 

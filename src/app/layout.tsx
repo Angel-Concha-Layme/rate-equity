@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { fontVars } from "./fonts";
+import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RateEquity · Compara valor económico real",
-  description:
-    "RateEquity no compara salarios, compara valor económico real: liquidez, costo empresa, impuestos, beneficios y valor por hora efectiva entre modalidades de contratación.",
+  title: `${BRAND.name} · Compara valor económico real`,
+  description: `${BRAND.name} no compara salarios, compara valor económico real: liquidez, costo empresa, impuestos, beneficios y valor por hora efectiva entre modalidades de contratación.`,
 };
 
 export default function RootLayout({
