@@ -1,0 +1,20 @@
+// Barrel de componentes comunes (un componente por archivo en esta carpeta).
+export { Button } from "./Button";
+export { Card } from "./Card";
+export { Eyebrow } from "./Eyebrow";
+export { Metric } from "./Metric";
+export { Pill } from "./Pill";
+export { Label } from "./Label";
+export { Input } from "./Input";
+export { MoneyInput } from "./MoneyInput";
+export { Field } from "./Field";
+export { SegmentedControl } from "./SegmentedControl";
+export { Toggle } from "./Toggle";
+export { Tooltip } from "./Tooltip";
+export { InfoDot } from "./InfoDot";
+export { Divider } from "./Divider";
+export { Dropdown } from "./Dropdown";
+export { Modal } from "./Modal";
+export { Toaster, toast } from "./Toast";
+export { FlagSelect } from "./FlagSelect";
+export { StepDots } from "./StepDots";
