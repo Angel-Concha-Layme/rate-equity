@@ -1,26 +1,231 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ------------------------------------------------------------------ *
+ * Variantes de tema (utility-first): permiten overrides por tema en el
+ * markup, p. ej. `font-display theme-terminal:font-mono`.
+ * Doc: tailwindcss.com/docs/adding-custom-styles#custom-variants
+ * ------------------------------------------------------------------ */
+@custom-variant theme-ledger (&:where([data-theme^="ledger"] *));
+@custom-variant theme-terminal (&:where([data-theme="terminal"] *));
+@custom-variant theme-clarity (&:where([data-theme="clarity"] *));
 
+/* ------------------------------------------------------------------ *
+ * Tokens de diseño -> utilidades Tailwind.
+ * `inline` hace que las utilidades emitan var(--token), de modo que
+ * cambiar [data-theme] reescribe los valores en cascada.
+ * ------------------------------------------------------------------ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: var(--canvas);
+  --color-canvas-2: var(--canvas-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-profit: var(--profit);
+  --color-loss: var(--loss);
+  --color-warn: var(--warn);
+  --color-ring: var(--ring);
+
+  --font-display: var(--f-display);
+  --font-sans: var(--f-sans);
+  --font-mono: var(--f-mono);
+
+  --radius-card: var(--radius);
+  --radius-input: var(--radius-input-v);
+  --radius-pill: var(--radius-pill-v);
+
+  --shadow-card: var(--sh-card);
+  --shadow-pop: var(--sh-pop);
+  --shadow-glow: var(--sh-glow);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-out: fade-out 0.2s ease-in forwards;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+}
+
+/* ================================================================== *
+ * VALORES POR TEMA (datos, no clases utilitarias)
+ * ================================================================== */
+
+/* A: El Libro Mayor · claro · editorial-financiero (default)
+ * El bloque se comparte con "ledger-v2" (mismos colores/formas); V2 solo
+ * sobrescribe las fuentes más abajo. */
+:root,
+[data-theme="ledger"],
+[data-theme="ledger-v2"] {
+  --canvas: #faf8f2;
+  --canvas-2: #f1ece0;
+  --surface: #ffffff;
+  --surface-2: #f7f4ec;
+  --ink: #1c1a14;
+  --muted: #6c6555;
+  --subtle: #9a917e;
+  --line: #e6e0d2;
+  --line-strong: #c8bda3;
+  --primary: #14233e;
+  --on-primary: #faf8f2;
+  --accent: #9a6a1c;
+  --on-accent: #ffffff;
+  --profit: #1a7a4b;
+  --loss: #b23420;
+  --warn: #b07a10;
+  --ring: #14233e;
+
+  --f-display: var(--f-fraunces), Georgia, serif;
+  --f-sans: var(--f-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --f-mono: var(--f-plex-mono), ui-monospace, monospace;
+
+  /* esquinas tomadas del tema "Claro" */
+  --radius: 20px;
+  --radius-input-v: 14px;
+  --radius-pill-v: 999px;
+
+  --sh-card: 0 1px 0 rgba(28, 26, 20, 0.03), 0 1px 2px rgba(28, 26, 20, 0.05);
+  --sh-pop: 0 18px 40px -18px rgba(28, 26, 20, 0.28);
+  --sh-glow: 0 0 #0000;
+
+  --c1: #14233e;
+  --c2: #9a6a1c;
+  --c3: #1a7a4b;
+  --c4: #7c6a4e;
+  --c5: #b23420;
+  --chart-grid: #ece6d8;
+  --chart-axis: #c8bda3;
+}
+
+/* B: Terminal Nocturno · oscuro OLED · quant */
+[data-theme="terminal"] {
+  --canvas: #070a10;
+  --canvas-2: #0b0f17;
+  --surface: #0f1520;
+  --surface-2: #151c29;
+  --ink: #e8edf5;
+  --muted: #93a0b4;
+  --subtle: #5d6a7e;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --primary: #2dd4bf;
+  --on-primary: #03130f;
+  --accent: #3b82f6;
+  --on-accent: #04122b;
+  --profit: #34d399;
+  --loss: #fb7185;
+  --warn: #fbbf24;
+  --ring: #2dd4bf;
+
+  --f-display: var(--f-hanken), ui-sans-serif, system-ui, sans-serif;
+  --f-sans: var(--f-hanken), ui-sans-serif, system-ui, sans-serif;
+  --f-mono: var(--f-jetbrains), ui-monospace, monospace;
+
+  --radius: 11px;
+  --radius-input-v: 9px;
+  --radius-pill-v: 999px;
+
+  --sh-card: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 34px -20px rgba(0, 0, 0, 0.85);
+  --sh-pop: 0 24px 60px -22px rgba(0, 0, 0, 0.9);
+  --sh-glow: 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent),
+    0 10px 30px -12px color-mix(in oklab, var(--primary) 55%, transparent);
+
+  --c1: #2dd4bf;
+  --c2: #3b82f6;
+  --c3: #a78bfa;
+  --c4: #34d399;
+  --c5: #fb7185;
+  --chart-grid: rgba(255, 255, 255, 0.07);
+  --chart-axis: rgba(255, 255, 255, 0.2);
+}
+
+/* C: Claro · claro · humano / cercano */
+[data-theme="clarity"] {
+  --canvas: #f1f6f2;
+  --canvas-2: #e3efe6;
+  --surface: #ffffff;
+  --surface-2: #f3f9f4;
+  --ink: #0e2e29;
+  --muted: #4e6a62;
+  --subtle: #8aa39b;
+  --line: #dceae1;
+  --line-strong: #bcd6c9;
+  --primary: #0f766e;
+  --on-primary: #ffffff;
+  --accent: #fb7138;
+  --on-accent: #ffffff;
+  --profit: #10b981;
+  --loss: #ef4444;
+  --warn: #f59e0b;
+  --ring: #0f766e;
+
+  --f-display: var(--f-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --f-sans: var(--f-lexend), ui-sans-serif, system-ui, sans-serif;
+  --f-mono: var(--f-jetbrains), ui-monospace, monospace;
+
+  --radius: 20px;
+  --radius-input-v: 14px;
+  --radius-pill-v: 999px;
+
+  --sh-card: 0 1px 2px rgba(14, 46, 41, 0.04),
+    0 14px 30px -16px rgba(14, 46, 41, 0.2);
+  --sh-pop: 0 26px 60px -24px rgba(14, 46, 41, 0.3);
+  --sh-glow: 0 0 #0000;
+
+  --c1: #0f766e;
+  --c2: #10b981;
+  --c3: #fb7138;
+  --c4: #38bdf8;
+  --c5: #f43f5e;
+  --chart-grid: #e1efe7;
+  --chart-axis: #bcd6c9;
+}
+
+/* ------------------------------------------------------------------ *
+ * El Libro Mayor V2: mismos colores y formas, tipografía del tema
+ * "Claro" (Bricolage + Lexend + JetBrains). Solo sustituye familias.
+ * ------------------------------------------------------------------ */
+[data-theme="ledger-v2"] {
+  --f-display: var(--f-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --f-sans: var(--f-lexend), ui-sans-serif, system-ui, sans-serif;
+  --f-mono: var(--f-jetbrains), ui-monospace, monospace;
 }
