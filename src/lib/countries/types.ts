@@ -33,6 +33,10 @@ export interface Result extends Modality {
   monthlyAverage: number; // total value / 12
   hourlyValue: number;
   refund: number; // annual tax refund (0 if not applicable)
+  // Monthly fixed expenses applied generically by the core (not the strategy);
+  // `disposable` = totalComp − monthlyExpenses. Populated by computeScenario.
+  monthlyExpenses?: number;
+  disposable?: number;
   months: MonthResult[];
   annual: {
     totalIncome: number;

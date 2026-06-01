@@ -80,6 +80,12 @@ export function ModalityCard({
           <Stat dt="Costo empresa" dd={money(res.employerCost)} />
           <Stat dt="Carga fiscal" dd={pct(res.loadPct)} />
           <Stat dt="Valor / hora" dd={money(res.hourlyValue, { decimals: 1 })} accent />
+          {res.monthlyExpenses ? (
+            <>
+              <Stat dt="Gastos fijos" dd={money(res.monthlyExpenses)} />
+              <Stat dt="Disponible" dd={money(res.disposable ?? 0)} accent />
+            </>
+          ) : null}
         </dl>
       </div>
     </Card>
