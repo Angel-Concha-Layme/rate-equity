@@ -147,10 +147,10 @@ export function modelFormal(
 
 /**
  * Informal/independiente (4th) from the annual income and the monthly fraction.
- * `annualInsurance` is the annual cost of private insurance (in soles). It is
- * treated as health coverage: paid by the worker (reduces their liquidity) but
- * counted as health value, like EsSalud in payroll. That is why the total value
- * does not change versus having no insurance; what drops is the liquidity.
+ * `annualInsurance` is the annual cost of private insurance (in soles). It is a
+ * personal cost: it reduces the worker's liquidity (and therefore the total
+ * value) and is NOT counted as a health benefit. The only benefit here is the
+ * year-end income-tax refund, when it applies.
  */
 export function modelInformal(
   annualIncome: number,
@@ -177,9 +177,9 @@ export function modelInformal(
   });
 
   const refund = Math.max(0, annualWithholding - tax); // settled in the annual return
-  const health = annualInsurance; // valued private coverage (equivalent to EsSalud)
+  const health = 0; // private insurance is a personal cost, not a valued benefit
   const annualLiquidity = totalIncome - annualWithholding - annualInsurance; // cash after insurance
-  const totalValue = annualLiquidity + refund + health; // = income − final tax
+  const totalValue = annualLiquidity + refund; // net liquidity + the only benefit (refund)
   const employerCost = totalIncome; // the company only pays the fee
 
   const hourlyValue = time.totalHours > 0 ? totalValue / time.totalHours : 0;
@@ -194,9 +194,8 @@ export function modelInformal(
       ? [{ label: "Seguro privado", amount: -round(monthlyInsurance), kind: "dec" as const }]
       : []),
     { label: "Líquido", amount: round(monthlyNet), kind: "subtotal" },
-    { label: "Devolución IR", amount: round(refund / 12), kind: "inc" },
-    ...(annualInsurance > 0
-      ? [{ label: "Salud (seguro)", amount: round(health / 12), kind: "inc" as const }]
+    ...(refund > 0
+      ? [{ label: "Devolución IR", amount: round(refund / 12), kind: "inc" as const }]
       : []),
     { label: "Valor total", amount: round(totalValue / 12), kind: "total" },
   ];

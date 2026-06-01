@@ -130,17 +130,29 @@ export function WaterfallChart({
     const s = steps[i];
     let y0n: number, y1n: number, runAfter: number;
     if (s.kind === "start" || s.kind === "subtotal" || s.kind === "total") {
-      run = s.amount;
       y0n = 0;
-      y1n = run;
-      runAfter = run;
+      y1n = s.amount;
+      // A branch absolute step (e.g. "Disponible") is shown but keeps the main
+      // running total at its current value so following steps continue from it.
+      if (s.branch) {
+        runAfter = run;
+      } else {
+        run = s.amount;
+        runAfter = run;
+      }
     } else {
       const st = run;
       const en = run + s.amount;
       y0n = Math.min(st, en);
       y1n = Math.max(st, en);
-      run = en;
-      runAfter = en;
+      // A branch delta (e.g. "Gastos fijos") hangs from the line without
+      // reducing the main running total.
+      if (s.branch) {
+        runAfter = run;
+      } else {
+        run = en;
+        runAfter = en;
+      }
     }
     bars.push({ ...s, y0n, y1n, runAfter, cx: PL + slot * (i + 0.5) });
   }

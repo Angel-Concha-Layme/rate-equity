@@ -46,25 +46,32 @@ export function totalMonthlyExpenses(expenses: Expense[]): number {
 
 /**
  * Applies the monthly expenses (already in local currency) to a modeled result,
- * in place. The economic comparison (total value) is unchanged; expenses are a
- * personal cash outflow shown as the final descent of the waterfall toward the
- * disposable figure (`disposable = totalComp - monthlyExpenses`).
+ * in place. Expenses reduce the net liquidity, not the total value:
+ *   disposable = net − expenses
+ * The total value (net + benefits) is left untouched, so the equivalence
+ * comparison is unaffected. In the waterfall the expenses are a branch that
+ * dips from "Líquido" down to "Disponible" without altering the main flow, so
+ * the benefits still build up from the net to the (unchanged) total value.
  */
 export function applyExpenses(result: Result, monthlyExpenses: number): Result {
-  result.monthlyExpenses = Math.round(monthlyExpenses);
-  result.disposable = Math.round(result.totalComp - monthlyExpenses);
+  const expenses = Math.round(monthlyExpenses);
+  result.monthlyExpenses = expenses;
+  result.disposable = result.net - expenses;
 
-  if (monthlyExpenses <= 0) return result;
+  if (expenses <= 0) return result;
 
-  // Demote the existing closing "total" step to a subtotal, then append the
-  // expenses block and the new "Disponible" total so the running sum stays
-  // consistent (total value − expenses).
-  const steps: BreakdownStep[] = result.breakdown.map((s) =>
-    s.kind === "total" ? { ...s, kind: "subtotal" } : s,
-  );
-  steps.push({ label: "Gastos fijos", amount: -result.monthlyExpenses, kind: "dec" });
-  steps.push({ label: "Disponible", amount: result.disposable, kind: "total" });
-  result.breakdown = steps;
+  // The net is the first subtotal ("Líquido"); insert the expenses branch right
+  // after it. Branch steps are shown but do not carry into the running total,
+  // so the benefit steps that follow still climb from the net.
+  const steps = result.breakdown;
+  const netIdx = steps.findIndex((s) => s.kind === "subtotal");
+  if (netIdx === -1) return result;
+
+  const block: BreakdownStep[] = [
+    { label: "Gastos fijos", amount: -expenses, kind: "dec", branch: true },
+    { label: "Disponible", amount: steps[netIdx].amount - expenses, kind: "subtotal", branch: true },
+  ];
+  result.breakdown = [...steps.slice(0, netIdx + 1), ...block, ...steps.slice(netIdx + 1)];
 
   return result;
 }

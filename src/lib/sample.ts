@@ -14,6 +14,13 @@ export interface BreakdownStep {
   /** Absolute amount for start/subtotal/total; signed delta for inc/dec. */
   amount: number;
   kind: "start" | "inc" | "dec" | "subtotal" | "total";
+  /**
+   * A branch step is drawn as an aside that hangs from the current running
+   * total but does NOT carry into it, so the main flow continues unaffected
+   * (e.g. expenses dipping from "Líquido" to "Disponible" while benefits still
+   * build up to the total value).
+   */
+  branch?: boolean;
 }
 
 export interface Modality {
