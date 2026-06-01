@@ -1,29 +1,29 @@
 /**
- * Registro de estrategias por país (patrón Strategy). El core resuelve la
- * estrategia desde `input.pais`; añadir un país nuevo es crear su carpeta bajo
- * `pe/` (modelo + copy + feriados), registrarla aquí y habilitarla en
- * `PAIS_OPTIONS`.
+ * Per-country strategy registry (Strategy pattern). The core resolves the
+ * strategy from `input.country`; adding a new country means creating its folder
+ * under `pe/` (model + copy + holidays), registering it here and enabling it in
+ * `COUNTRY_OPTIONS`.
  */
-import type { CountryStrategy, Pais } from "./types";
+import type { CountryStrategy, Country } from "./types";
 import { peru } from "./pe";
 
-export type { CountryStrategy, Pais, Rol, Resultado, MesResultado } from "./types";
+export type { CountryStrategy, Country, Role, Result, MonthResult } from "./types";
 
-export const STRATEGIES: Partial<Record<Pais, CountryStrategy>> = {
+export const STRATEGIES: Partial<Record<Country, CountryStrategy>> = {
   pe: peru,
 };
 
-/** Estrategia del país (con respaldo a Perú si el código no está habilitado). */
-export function getStrategy(pais: string): CountryStrategy {
-  return STRATEGIES[pais as Pais] ?? peru;
+/** Strategy of the country (falling back to Peru if the code is not enabled). */
+export function getStrategy(country: string): CountryStrategy {
+  return STRATEGIES[country as Country] ?? peru;
 }
 
 /**
- * Opciones para el selector de país. Incluye jurisdicciones futuras marcadas
- * como `disabled` hasta tener su estrategia: la UI las muestra pero no permite
- * seleccionarlas.
+ * Options for the country selector. Includes future jurisdictions marked as
+ * `disabled` until they have a strategy: the UI shows them but does not allow
+ * selecting them.
  */
-export const PAIS_OPTIONS: {
+export const COUNTRY_OPTIONS: {
   value: string;
   label: string;
   flag: string;

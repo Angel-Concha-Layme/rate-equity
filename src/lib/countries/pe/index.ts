@@ -1,36 +1,36 @@
-/** Estrategia de Perú: ensambla modelado, calendario y copy. */
+/** Peru strategy: assembles modeling, calendar and copy. */
 import { makeMoney } from "@/lib/sample";
-import type { CountryStrategy, Rol } from "../types";
-import { feriadosPE } from "./feriados";
-import { independiente, planilla, uitDe } from "./modelo";
-import { COPY_PE, DETALLE_ROWS_PE, MODALIDADES_PE } from "./copy";
+import type { CountryStrategy, Role } from "../types";
+import { holidaysPE } from "./holidays";
+import { modelFormal, modelInformal, uitOf } from "./model";
+import { COPY_PE, DETAIL_ROWS_PE, MODALITIES_PE } from "./copy";
 
-// Tramos de precio MENSUAL del seguro privado de salud (en soles).
-const SEGURO_TRAMOS_PE = [100, 190, 280, 300];
-// El seguro sugerido no debe superar este porcentaje de la liquidez mensual.
-const SEGURO_TECHO_LIQUIDEZ = 0.05;
+// Monthly price tiers of private health insurance (in soles).
+const INSURANCE_TIERS_PE = [100, 190, 280, 300];
+// The suggested insurance must not exceed this percentage of monthly liquidity.
+const INSURANCE_LIQUIDITY_CAP = 0.05;
 
-function seguroSugeridoPE(liquidezMensual: number): number {
-  if (!SEGURO_TRAMOS_PE.length) return 0;
-  const techo = SEGURO_TECHO_LIQUIDEZ * Math.max(0, liquidezMensual);
-  const aptos = SEGURO_TRAMOS_PE.filter((t) => t <= techo);
-  return aptos.length ? Math.max(...aptos) : Math.min(...SEGURO_TRAMOS_PE);
+function suggestedInsurancePE(monthlyLiquidity: number): number {
+  if (!INSURANCE_TIERS_PE.length) return 0;
+  const cap = INSURANCE_LIQUIDITY_CAP * Math.max(0, monthlyLiquidity);
+  const eligible = INSURANCE_TIERS_PE.filter((t) => t <= cap);
+  return eligible.length ? Math.max(...eligible) : Math.min(...INSURANCE_TIERS_PE);
 }
 
 export const peru: CountryStrategy = {
   meta: { code: "pe", label: "Perú", flag: "🇵🇪", currency: "PEN", locale: "es-PE", disabled: false },
-  defaultRol: "formal",
-  modalidades: MODALIDADES_PE,
-  feriados: feriadosPE,
-  ingresoVariable: (rol: Rol) => rol === "informal",
-  facturaBruto: (rol: Rol) => rol === "informal",
-  modelar: ({ rol, ingresoAnual, fraccionMensual, tiempo, year, seguroAnual = 0 }) =>
-    rol === "formal"
-      ? planilla(ingresoAnual, fraccionMensual, tiempo, uitDe(year))
-      : independiente(ingresoAnual, fraccionMensual, tiempo, uitDe(year), seguroAnual),
-  detalleRows: () => DETALLE_ROWS_PE,
-  seguroTramos: () => SEGURO_TRAMOS_PE,
-  seguroSugerido: seguroSugeridoPE,
+  defaultRole: "formal",
+  modalities: MODALITIES_PE,
+  holidays: holidaysPE,
+  variableIncome: (role: Role) => role === "informal",
+  billsGross: (role: Role) => role === "informal",
+  model: ({ role, annualIncome, monthlyFraction, time, year, annualInsurance = 0 }) =>
+    role === "formal"
+      ? modelFormal(annualIncome, monthlyFraction, time, uitOf(year))
+      : modelInformal(annualIncome, monthlyFraction, time, uitOf(year), annualInsurance),
+  detailRows: () => DETAIL_ROWS_PE,
+  insuranceTiers: () => INSURANCE_TIERS_PE,
+  suggestedInsurance: suggestedInsurancePE,
   money: makeMoney("PEN", "es-PE"),
   copy: COPY_PE,
 };

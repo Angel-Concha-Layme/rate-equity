@@ -8,7 +8,7 @@ import {
   Lexend,
 } from "next/font/google";
 
-// Dirección A: El Libro Mayor (editorial / financiero)
+// Direction A: El Libro Mayor (editorial / financial)
 export const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--f-fraunces",
@@ -27,7 +27,7 @@ export const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
-// Dirección B: Terminal Nocturno (quant / terminal)
+// Direction B: Terminal Nocturno (quant / terminal)
 export const hanken = Hanken_Grotesk({
   subsets: ["latin"],
   variable: "--f-hanken",
@@ -39,7 +39,7 @@ export const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-// Dirección C: Claro (humano / cercano)
+// Direction C: Claro (human / approachable)
 export const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--f-bricolage",
@@ -51,7 +51,7 @@ export const lexend = Lexend({
   display: "swap",
 });
 
-// Todas las variables aplicadas en <html>. Cada tema escoge cuáles usa.
+// All variables applied on <html>. Each theme picks which ones it uses.
 export const fontVars = [
   fraunces,
   plexSans,

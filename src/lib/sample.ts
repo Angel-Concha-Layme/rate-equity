@@ -1,61 +1,61 @@
 /**
- * Datos de ejemplo para el Laboratorio de Estilos.
- * NO es el motor de cálculo real (eso vendrá luego); son cifras ilustrativas
- * y coherentes que cuentan la historia central de RateEquity:
- * dos ofertas con bruto parecido pueden representar realidades muy distintas.
+ * Sample data for the Styles Lab.
+ * This is NOT the real calculation engine (that comes later); these are
+ * illustrative, coherent figures that tell RateEquity's central story:
+ * two offers with similar gross pay can represent very different realities.
  *
- * Escenario: una misma persona evaluando 3 modalidades. Moneda: USD/mes.
+ * Scenario: one person evaluating 3 modalities. Currency: USD/month.
  */
 
-export type ModalidadKey = "planilla" | "contractor" | "freelance" | "independiente";
+export type ModalityKey = "planilla" | "contractor" | "freelance" | "independiente";
 
 export interface BreakdownStep {
   label: string;
-  /** monto absoluto para start/subtotal/total; delta con signo para inc/dec */
+  /** Absolute amount for start/subtotal/total; signed delta for inc/dec. */
   amount: number;
   kind: "start" | "inc" | "dec" | "subtotal" | "total";
 }
 
-export interface Modalidad {
-  key: ModalidadKey;
-  nombre: string;
+export interface Modality {
+  key: ModalityKey;
+  name: string;
   tagline: string;
-  /** bruto "de portada" que ofrece cada modalidad */
-  bruto: number;
-  /** efectivo que llega al bolsillo (líquido) */
-  liquido: number;
-  /** compensación total incluyendo beneficios valorizados */
-  compTotal: number;
-  /** lo que le cuesta a la empresa */
-  costoEmpresa: number;
-  /** valor de beneficios laborales (aguinaldo, vacaciones, CTS, seguro...) */
-  beneficios: number;
-  /** carga tributaria + aportes como % del bruto */
-  cargaPct: number;
-  /** horas efectivas por semana (típicas) */
-  horasSemana: number;
-  /** etiqueta destacada */
+  /** Headline gross pay offered by each modality. */
+  gross: number;
+  /** Cash that reaches the pocket (take-home). */
+  net: number;
+  /** Total compensation including valued benefits. */
+  totalComp: number;
+  /** What it costs the employer. */
+  employerCost: number;
+  /** Value of labor benefits (bonus, vacations, CTS, insurance...). */
+  benefits: number;
+  /** Tax burden + contributions as % of gross. */
+  loadPct: number;
+  /** Effective hours per week (typical). */
+  hoursPerWeek: number;
+  /** Highlighted label. */
   badge: string;
-  /** desglose para el waterfall */
+  /** Breakdown for the waterfall. */
   breakdown: BreakdownStep[];
-  /** mini serie para sparkline (estabilidad del ingreso mes a mes) */
+  /** Mini series for the sparkline (month-to-month income stability). */
   spark: number[];
-  /** ejes del radar (0-100) */
-  radar: { liquidez: number; compTotal: number; beneficios: number; estabilidad: number; flexibilidad: number };
+  /** Radar axes (0-100). */
+  radar: { liquidity: number; totalComp: number; benefits: number; stability: number; flexibility: number };
 }
 
-export const MODALIDADES: Modalidad[] = [
+export const MODALITIES: Modality[] = [
   {
     key: "planilla",
-    nombre: "Planilla",
+    name: "Planilla",
     tagline: "Relación de dependencia",
-    bruto: 3000,
-    liquido: 2340,
-    compTotal: 2860,
-    costoEmpresa: 3900,
-    beneficios: 520,
-    cargaPct: 22,
-    horasSemana: 40,
+    gross: 3000,
+    net: 2340,
+    totalComp: 2860,
+    employerCost: 3900,
+    benefits: 520,
+    loadPct: 22,
+    hoursPerWeek: 40,
     badge: "Más estable",
     breakdown: [
       { label: "Bruto", amount: 3000, kind: "start" },
@@ -68,19 +68,19 @@ export const MODALIDADES: Modalidad[] = [
       { label: "Comp. total", amount: 2860, kind: "total" },
     ],
     spark: [2860, 2860, 2860, 2860, 2860, 2860],
-    radar: { liquidez: 62, compTotal: 70, beneficios: 95, estabilidad: 92, flexibilidad: 28 },
+    radar: { liquidity: 62, totalComp: 70, benefits: 95, stability: 92, flexibility: 28 },
   },
   {
     key: "contractor",
-    nombre: "Contractor",
+    name: "Contractor",
     tagline: "Servicios recurrentes",
-    bruto: 3600,
-    liquido: 3060,
-    compTotal: 3060,
-    costoEmpresa: 3600,
-    beneficios: 0,
-    cargaPct: 15,
-    horasSemana: 40,
+    gross: 3600,
+    net: 3060,
+    totalComp: 3060,
+    employerCost: 3600,
+    benefits: 0,
+    loadPct: 15,
+    hoursPerWeek: 40,
     badge: "Mayor liquidez",
     breakdown: [
       { label: "Bruto", amount: 3600, kind: "start" },
@@ -91,19 +91,19 @@ export const MODALIDADES: Modalidad[] = [
       { label: "Comp. total", amount: 3060, kind: "total" },
     ],
     spark: [3060, 3060, 2980, 3060, 3060, 3120],
-    radar: { liquidez: 90, compTotal: 82, beneficios: 12, estabilidad: 56, flexibilidad: 74 },
+    radar: { liquidity: 90, totalComp: 82, benefits: 12, stability: 56, flexibility: 74 },
   },
   {
     key: "freelance",
-    nombre: "Freelance",
+    name: "Freelance",
     tagline: "Por proyecto",
-    bruto: 3200,
-    liquido: 2624,
-    compTotal: 2624,
-    costoEmpresa: 3200,
-    beneficios: 0,
-    cargaPct: 18,
-    horasSemana: 35,
+    gross: 3200,
+    net: 2624,
+    totalComp: 2624,
+    employerCost: 3200,
+    benefits: 0,
+    loadPct: 18,
+    hoursPerWeek: 35,
     badge: "Más flexible",
     breakdown: [
       { label: "Bruto", amount: 3200, kind: "start" },
@@ -113,42 +113,42 @@ export const MODALIDADES: Modalidad[] = [
       { label: "Comp. total", amount: 2624, kind: "total" },
     ],
     spark: [2900, 2400, 3100, 2200, 2900, 2624],
-    radar: { liquidez: 78, compTotal: 72, beneficios: 8, estabilidad: 30, flexibilidad: 95 },
+    radar: { liquidity: 78, totalComp: 72, benefits: 8, stability: 30, flexibility: 95 },
   },
 ];
 
-export const RADAR_AXES: { key: keyof Modalidad["radar"]; label: string }[] = [
-  { key: "liquidez", label: "Liquidez" },
-  { key: "compTotal", label: "Comp. total" },
-  { key: "beneficios", label: "Beneficios" },
-  { key: "estabilidad", label: "Estabilidad" },
-  { key: "flexibilidad", label: "Flexibilidad" },
+export const RADAR_AXES: { key: keyof Modality["radar"]; label: string }[] = [
+  { key: "liquidity", label: "Liquidez" },
+  { key: "totalComp", label: "Comp. total" },
+  { key: "benefits", label: "Beneficios" },
+  { key: "stability", label: "Estabilidad" },
+  { key: "flexibility", label: "Flexibilidad" },
 ];
 
-export const SEMANAS_MES = 4.33;
+export const WEEKS_PER_MONTH = 4.33;
 
-/* --------------------------- helpers de formato --------------------------- */
+/* --------------------------- formatting helpers --------------------------- */
 
-// A partir de este monto se usa notación compacta (p. ej. "S/ 16,2 M") para
-// evitar desbordes/solapamientos con monedas de muchos dígitos.
-const MONEY_COMPACT_DESDE = 1_000_000;
+// From this amount on, compact notation is used (e.g. "S/ 16.2 M") to avoid
+// overflow/overlap with currencies that have many digits.
+const MONEY_COMPACT_FROM = 1_000_000;
 
 export type MoneyFn = (n: number, opts?: { decimals?: number; sign?: boolean }) => string;
 
 /**
- * Crea un formateador de moneda ligado a una divisa y locale concretos. Cada
- * país (estrategia) expone el suyo, de modo que las cifras se muestran en la
- * moneda local correspondiente sin acoplar el formateo a Perú.
+ * Creates a currency formatter bound to a specific currency and locale. Each
+ * country (strategy) exposes its own, so figures are shown in the matching
+ * local currency without coupling formatting to Peru.
  */
 export function makeMoney(currency: string, locale: string): MoneyFn {
   return function money(n: number, opts: { decimals?: number; sign?: boolean } = {}): string {
     const { decimals = 0, sign = false } = opts;
     const abs = Math.abs(n);
-    const compacto = abs >= MONEY_COMPACT_DESDE;
+    const compact = abs >= MONEY_COMPACT_FROM;
     const s = new Intl.NumberFormat(locale, {
       style: "currency",
       currency,
-      ...(compacto
+      ...(compact
         ? { notation: "compact", maximumFractionDigits: 1 }
         : { minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
     }).format(abs);
@@ -157,15 +157,15 @@ export function makeMoney(currency: string, locale: string): MoneyFn {
   };
 }
 
-/** Formateador por defecto (Soles), usado por el laboratorio y como respaldo. */
+/** Default formatter (Soles), used by the lab and as a fallback. */
 export const money: MoneyFn = makeMoney("PEN", "es-PE");
 
 export function pct(n: number, decimals = 0): string {
   return `${n.toFixed(decimals)}%`;
 }
 
-/** valor por hora efectiva a partir de un líquido mensual y horas/semana */
-export function valorHora(liquidoMensual: number, horasSemana: number): number {
-  const horasMes = horasSemana * SEMANAS_MES;
-  return horasMes > 0 ? liquidoMensual / horasMes : 0;
+/** Effective hourly value from a monthly net amount and hours/week. */
+export function hourlyValue(monthlyNet: number, hoursPerWeek: number): number {
+  const monthlyHours = hoursPerWeek * WEEKS_PER_MONTH;
+  return monthlyHours > 0 ? monthlyNet / monthlyHours : 0;
 }

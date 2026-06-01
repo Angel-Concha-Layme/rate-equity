@@ -1,27 +1,27 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import { FX_FALLBACK, getRateToPEN, readFxCache, isFxCacheFresh, type FxFuente } from "./fx";
+import { FX_FALLBACK, getRateToPEN, readFxCache, isFxCacheFresh, type FxSource } from "./fx";
 
 export interface FxState {
-  rate: number; // PEN por 1 unidad de `from`
-  fecha: string;
-  fuente: FxFuente;
+  rate: number; // PEN per 1 unit of `from`
+  date: string;
+  source: FxSource;
   loading: boolean;
   stale: boolean;
 }
 
-const PEN_STATE: FxState = { rate: 1, fecha: "", fuente: "fallback", loading: false, stale: false };
+const PEN_STATE: FxState = { rate: 1, date: "", source: "fallback", loading: false, stale: false };
 
-// Snapshots estables por código de moneda. useSyncExternalStore exige que
-// getSnapshot devuelva la misma referencia mientras el valor no cambie.
+// Stable snapshots per currency code. useSyncExternalStore requires getSnapshot
+// to return the same reference while the value does not change.
 const snapshots = new Map<string, FxState>();
 const serverSnapshots = new Map<string, FxState>();
 const listeners = new Set<() => void>();
 const requested = new Set<string>();
 
 function fallbackState(code: string): FxState {
-  return { rate: FX_FALLBACK[code] ?? 1, fecha: "", fuente: "fallback", loading: true, stale: false };
+  return { rate: FX_FALLBACK[code] ?? 1, date: "", source: "fallback", loading: true, stale: false };
 }
 
 function serverSnapshot(code: string): FxState {
@@ -53,7 +53,7 @@ function clientSnapshot(code: string): FxState {
   return snap;
 }
 
-// Lee caché (síncrono) y revalida en segundo plano. Solo la primera vez por código.
+// Reads cache (synchronously) and revalidates in the background. Only the first time per code.
 function ensureLoaded(code: string) {
   if (code === "PEN" || requested.has(code)) return;
   requested.add(code);
@@ -62,25 +62,25 @@ function ensureLoaded(code: string) {
   if (cache) {
     setSnapshot(code, {
       rate: cache.rate,
-      fecha: cache.fecha,
-      fuente: "cache",
+      date: cache.date,
+      source: "cache",
       loading: false,
       stale: !isFxCacheFresh(cache),
     });
-    if (isFxCacheFresh(cache)) return; // fresca: sin red
+    if (isFxCacheFresh(cache)) return; // fresh: no network
   }
 
   getRateToPEN(code)
-    .then((r) => setSnapshot(code, { rate: r.rate, fecha: r.fecha, fuente: r.fuente, loading: false, stale: false }))
+    .then((r) => setSnapshot(code, { rate: r.rate, date: r.date, source: r.source, loading: false, stale: false }))
     .catch(() => {
-      /* getRateToPEN nunca lanza; defensivo */
+      /* getRateToPEN never throws; defensive */
     });
 }
 
 /**
- * Tipo de cambio hacia PEN con stale-while-revalidate.
- * NUNCA hace fetch en render: se modela como store externo, pinta al instante
- * con caché o FX_FALLBACK y revalida en segundo plano al suscribirse.
+ * Exchange rate toward PEN with stale-while-revalidate.
+ * NEVER fetches during render: modeled as an external store, paints instantly
+ * with cache or FX_FALLBACK and revalidates in the background on subscribe.
  */
 export function useFxRate(from: string): FxState {
   const code = (from || "PEN").toUpperCase();

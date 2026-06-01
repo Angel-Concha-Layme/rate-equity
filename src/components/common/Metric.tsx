@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/cn";
 
-/** Cifra protagonista: fuente display + tabular; en Terminal usa mono. */
+/** Hero figure: display font + tabular nums; uses mono in the Terminal theme. */
 export function Metric({ className, children, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span

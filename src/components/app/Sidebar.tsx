@@ -3,15 +3,15 @@
 import { useState } from "react";
 import { Card, SegmentedControl, FlagSelect, MoneyInput, InfoDot, Eyebrow, Divider, Toggle, Modal } from "@/components/common";
 import { toast } from "@/components/common/Toast";
-import { HorarioField } from "@/components/app/HorarioField";
+import { ScheduleField } from "@/components/app/ScheduleField";
 import {
   getStrategy,
-  MONEDA_OPTIONS,
-  PAIS_OPTIONS,
+  CURRENCY_OPTIONS,
+  COUNTRY_OPTIONS,
   type ScenarioInput,
-  type Rol,
-  type TipoCobro,
-  type Moneda,
+  type Role,
+  type BillingType,
+  type CurrencyCode,
 } from "@/lib/calc";
 import type { FxState } from "@/lib/useFxRate";
 import { cn } from "@/lib/cn";
@@ -29,36 +29,37 @@ function Ctrl({ label, info, children }: { label: string; info?: string; childre
 }
 
 /**
- * Panel lateral del workspace: marca + controles del escenario. Ocupa toda la
- * altura del viewport en pantallas grandes (sticky) con padding externo
- * simétrico arriba y abajo, y mantiene min-w-0 para no desbordar el layout.
+ * Workspace side panel: brand + scenario controls. Spans the full viewport
+ * height on large screens (sticky) with symmetric outer padding top and bottom,
+ * and keeps min-w-0 so it does not overflow the layout.
  */
 export function Sidebar({
   input,
   patch,
   fx,
-  seguroSugerido,
-  onReabrirWizard,
+  suggestedInsurance,
+  onReopenWizard,
   onReset,
 }: {
   input: ScenarioInput;
   patch: (p: Partial<ScenarioInput>) => void;
   fx: FxState;
-  seguroSugerido: number;
-  onReabrirWizard: () => void;
+  suggestedInsurance: number;
+  onReopenWizard: () => void;
   onReset: () => void;
 }) {
-  const [abierto, setAbierto] = useState(false);
-  const [ajustesOpen, setAjustesOpen] = useState(false);
-  const strat = getStrategy(input.pais);
-  const usaHora = input.tipoCobro === "hora";
-  const esIndep = input.categoria === "informal";
-  const symbol = MONEDA_OPTIONS.find((m) => m.value === input.monedaCobro)?.symbol ?? "S/";
-  const localSymbol = MONEDA_OPTIONS.find((m) => m.value === strat.meta.currency)?.symbol ?? "S/";
-  const catLabel = strat.modalidades[input.categoria].nombre;
-  const paisLabel = strat.meta.label;
-  const horasSemana = input.horario.reduce((a, b) => a + b, 0);
-  const resumen = `${catLabel} · ${symbol} ${input.monto.toLocaleString("es-PE")} ${input.modo} · ${horasSemana} h/sem`;
+  const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const strategy = getStrategy(input.country);
+  const usesHourly = input.billingType === "hourly";
+  const isInformal = input.category === "informal";
+  const symbol = CURRENCY_OPTIONS.find((m) => m.value === input.billingCurrency)?.symbol ?? "S/";
+  const localSymbol = CURRENCY_OPTIONS.find((m) => m.value === strategy.meta.currency)?.symbol ?? "S/";
+  const categoryLabel = strategy.modalities[input.category].name;
+  const countryLabel = strategy.meta.label;
+  const weekHours = input.schedule.reduce((a, b) => a + b, 0);
+  const modeLabel = input.mode === "net" ? "neto" : "bruto";
+  const summary = `${categoryLabel} · ${symbol} ${input.amount.toLocaleString("es-PE")} ${modeLabel} · ${weekHours} h/sem`;
 
   return (
     <aside className="min-w-0 lg:sticky lg:top-0 lg:h-screen lg:py-5">
@@ -67,37 +68,37 @@ export function Sidebar({
           <span className="font-display text-2xl font-bold tracking-tight text-ink">
             Rate<span className="text-accent">Equity</span>
           </span>
-          <span className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-subtle">{paisLabel}</span>
+          <span className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-subtle">{countryLabel}</span>
         </div>
 
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <Eyebrow>Tu situación</Eyebrow>
             <p className="mt-1 hidden text-xs text-subtle lg:block">Edita y todo se recalcula al instante.</p>
-            <p className="mt-1 truncate text-xs text-muted lg:hidden">{resumen}</p>
+            <p className="mt-1 truncate text-xs text-muted lg:hidden">{summary}</p>
           </div>
           <button
             type="button"
-            onClick={() => setAbierto((a) => !a)}
-            aria-expanded={abierto}
-            aria-label={abierto ? "Ocultar campos" : "Editar campos"}
+            onClick={() => setOpen((a) => !a)}
+            aria-expanded={open}
+            aria-label={open ? "Ocultar campos" : "Editar campos"}
             className="shrink-0 text-xs font-semibold text-accent underline-offset-4 hover:underline lg:hidden"
           >
-            {abierto ? "Ocultar" : "Editar"}
+            {open ? "Ocultar" : "Editar"}
           </button>
         </div>
 
-        <div className={cn("mt-5 flex-1 flex-col gap-4", abierto ? "flex" : "hidden lg:flex")}>
-          <Ctrl label="Situación" info={strat.copy.situacionInfo}>
+        <div className={cn("mt-5 flex-1 flex-col gap-4", open ? "flex" : "hidden lg:flex")}>
+          <Ctrl label="Situación" info={strategy.copy.situationInfo}>
             <SegmentedControl
               aria-label="Categoría"
-              value={input.categoria}
-              onChange={(v: Rol) =>
-                patch(v === "informal" ? { categoria: v, modo: "bruto" } : { categoria: v })
+              value={input.category}
+              onChange={(v: Role) =>
+                patch(v === "informal" ? { category: v, mode: "gross" } : { category: v })
               }
-              options={[strat.modalidades.formal, strat.modalidades.informal].map((m) => ({
-                value: m.rol,
-                label: m.nombre,
+              options={[strategy.modalities.formal, strategy.modalities.informal].map((m) => ({
+                value: m.role,
+                label: m.name,
               }))}
             />
           </Ctrl>
@@ -105,11 +106,11 @@ export function Sidebar({
           <Ctrl label="¿Cómo cobras?">
             <SegmentedControl
               aria-label="Tipo de cobro"
-              value={input.tipoCobro}
-              onChange={(v: TipoCobro) => patch({ tipoCobro: v, monto: v === "hora" ? 50 : 4500 })}
+              value={input.billingType}
+              onChange={(v: BillingType) => patch({ billingType: v, amount: v === "hourly" ? 50 : 4500 })}
               options={[
-                { value: "mensual", label: "Mensual" },
-                { value: "hora", label: "Por hora" },
+                { value: "monthly", label: "Mensual" },
+                { value: "hourly", label: "Por hora" },
               ]}
             />
           </Ctrl>
@@ -117,11 +118,11 @@ export function Sidebar({
           <div className="flex items-start gap-2">
             <div className="min-w-0 flex-1">
               <Ctrl
-                label={usaHora ? "Tarifa por hora" : "Monto mensual"}
+                label={usesHourly ? "Tarifa por hora" : "Monto mensual"}
                 info={
-                  input.monedaCobro === "PEN"
+                  input.billingCurrency === "PEN"
                     ? "Cobras en Soles, sin conversión."
-                    : `Conviertes de ${input.monedaCobro} a Soles al tipo de cambio referencial S/ ${fx.rate.toFixed(2)}. Es indicativo.`
+                    : `Conviertes de ${input.billingCurrency} a Soles al tipo de cambio referencial S/ ${fx.rate.toFixed(2)}. Es indicativo.`
                 }
               >
                 <div className="relative">
@@ -130,8 +131,8 @@ export function Sidebar({
                   </span>
                   <MoneyInput
                     className="pl-9"
-                    value={input.monto}
-                    onChange={(monto) => patch({ monto })}
+                    value={input.amount}
+                    onChange={(amount) => patch({ amount })}
                   />
                 </div>
               </Ctrl>
@@ -140,9 +141,9 @@ export function Sidebar({
               <Ctrl label="Moneda">
                 <FlagSelect
                   aria-label="Moneda"
-                  value={input.monedaCobro}
-                  onChange={(v: Moneda) => patch({ monedaCobro: v })}
-                  options={MONEDA_OPTIONS.map((m) => ({ value: m.value, label: m.value, flag: m.flag }))}
+                  value={input.billingCurrency}
+                  onChange={(v: CurrencyCode) => patch({ billingCurrency: v })}
+                  options={CURRENCY_OPTIONS.map((m) => ({ value: m.value, label: m.value, flag: m.flag }))}
                 />
               </Ctrl>
             </div>
@@ -154,18 +155,18 @@ export function Sidebar({
           >
             <SegmentedControl
               aria-label="Neto o bruto"
-              value={input.modo}
-              onChange={(v) => patch({ modo: v })}
+              value={input.mode}
+              onChange={(v) => patch({ mode: v })}
               options={[
                 {
-                  value: "neto",
+                  value: "net",
                   label: "Neto",
-                  disabled: esIndep,
-                  hint: esIndep
+                  disabled: isInformal,
+                  hint: isInformal
                     ? "Un independiente factura en bruto; el impuesto se regulariza al final del año."
                     : undefined,
                 },
-                { value: "bruto", label: "Bruto" },
+                { value: "gross", label: "Bruto" },
               ]}
             />
           </Ctrl>
@@ -174,20 +175,20 @@ export function Sidebar({
             label="Horario"
             info="Tus horas reales definen tu valor por hora. Los días y horas laborables se calculan sobre el calendario del año en curso."
           >
-            <HorarioField
-              horario={input.horario}
-              onChange={(h) => patch({ horario: h })}
+            <ScheduleField
+              schedule={input.schedule}
+              onChange={(h) => patch({ schedule: h })}
             />
           </Ctrl>
 
-          {esIndep && (
-            <Ctrl label="Feriados" info={strat.copy.feriadosInfo}>
+          {isInformal && (
+            <Ctrl label="Feriados" info={strategy.copy.holidaysInfo}>
               <label className="flex cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5">
                 <span className="text-[0.95rem] text-muted">Descontar feriados</span>
                 <Toggle
-                  checked={!!input.descontarFeriados}
+                  checked={!!input.deductHolidays}
                   onChange={(v) => {
-                    patch({ descontarFeriados: v });
+                    patch({ deductHolidays: v });
                     toast(
                       v
                         ? "Feriados descontados: la comparación se recalcula sobre menos horas facturadas este año."
@@ -201,23 +202,23 @@ export function Sidebar({
             </Ctrl>
           )}
 
-          {esIndep && (
-            <Ctrl label="Seguro privado" info={strat.copy.seguroInfo}>
+          {isInformal && (
+            <Ctrl label="Seguro privado" info={strategy.copy.insuranceInfo}>
               <label className="flex cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5">
                 <span className="text-[0.95rem] text-muted">Pago seguro privado</span>
                 <Toggle
-                  checked={!!input.seguroPrivado}
+                  checked={!!input.privateInsurance}
                   onChange={(v) =>
                     patch(
                       v
-                        ? { seguroPrivado: true, seguroPrivadoMonto: seguroSugerido || input.seguroPrivadoMonto }
-                        : { seguroPrivado: false },
+                        ? { privateInsurance: true, privateInsuranceAmount: suggestedInsurance || input.privateInsuranceAmount }
+                        : { privateInsurance: false },
                     )
                   }
                   label="Pago seguro privado"
                 />
               </label>
-              {input.seguroPrivado && (
+              {input.privateInsurance && (
                 <div className="relative mt-2">
                   <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">
                     {localSymbol}
@@ -225,8 +226,8 @@ export function Sidebar({
                   <MoneyInput
                     className="pl-9"
                     aria-label="Costo mensual del seguro privado"
-                    value={input.seguroPrivadoMonto ?? 0}
-                    onChange={(seguroPrivadoMonto) => patch({ seguroPrivadoMonto })}
+                    value={input.privateInsuranceAmount ?? 0}
+                    onChange={(privateInsuranceAmount) => patch({ privateInsuranceAmount })}
                   />
                 </div>
               )}
@@ -236,7 +237,7 @@ export function Sidebar({
           <div className="mt-auto pt-3">
             <button
               type="button"
-              onClick={() => setAjustesOpen(true)}
+              onClick={() => setSettingsOpen(true)}
               aria-label="Abrir ajustes avanzados"
               className="mb-3 flex w-full items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5 text-left text-[0.95rem] text-muted transition hover:border-ring/60 focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25"
             >
@@ -256,7 +257,7 @@ export function Sidebar({
             <div className="flex items-center justify-between gap-2">
               <button
                 type="button"
-                onClick={onReabrirWizard}
+                onClick={onReopenWizard}
                 className="text-xs font-semibold text-accent underline-offset-4 hover:underline"
               >
                 Rehacer wizard
@@ -273,13 +274,13 @@ export function Sidebar({
         </div>
       </Card>
 
-      <Modal open={ajustesOpen} onClose={() => setAjustesOpen(false)} title="Ajustes avanzados">
+      <Modal open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Ajustes avanzados">
         <Ctrl label="País">
           <FlagSelect
             aria-label="País"
-            value={input.pais}
-            onChange={(pais) => patch({ pais })}
-            options={PAIS_OPTIONS.map((p) => ({
+            value={input.country}
+            onChange={(country) => patch({ country })}
+            options={COUNTRY_OPTIONS.map((p) => ({
               value: p.value,
               label: p.label,
               flag: p.flag,

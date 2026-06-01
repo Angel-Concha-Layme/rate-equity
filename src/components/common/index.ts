@@ -1,4 +1,4 @@
-// Barrel de componentes comunes (un componente por archivo en esta carpeta).
+// Barrel for common components (one component per file in this folder).
 export { Button } from "./Button";
 export { Card } from "./Card";
 export { Eyebrow } from "./Eyebrow";

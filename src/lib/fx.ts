@@ -1,33 +1,34 @@
 /**
- * Tipo de cambio hacia la moneda local del país (hoy PEN).
- * Cascada: open.er-api.com -> jsDelivr currency-api -> pages.dev -> constante offline.
- * Sin API key, con CORS. El cálculo NUNCA debe bloquear por red: siempre hay un
- * valor inmediato (caché o FX_FALLBACK) y se revalida en segundo plano.
+ * Exchange rate toward the country's local currency (today PEN).
+ * Cascade: open.er-api.com -> jsDelivr currency-api -> pages.dev -> offline constant.
+ * No API key, CORS-enabled. The calculation must NEVER block on the network:
+ * there is always an immediate value (cache or FX_FALLBACK), revalidated in
+ * the background.
  *
- * Atribución (licencia open-access de ExchangeRate-API): se muestra en la UI.
+ * Attribution (ExchangeRate-API open-access license): shown in the UI.
  */
 
-// Último recurso offline (tasas aproximadas) para que el cálculo nunca se
-// bloquee. Se derivan del registro único de monedas (`currency.ts`).
+// Offline last resort (approximate rates) so the calculation never blocks.
+// Derived from the single currency registry (`currency.ts`).
 import { FX_FALLBACK } from "./currency";
 export { FX_FALLBACK };
 
-export type FxFuente = "api" | "cache" | "fallback";
+export type FxSource = "api" | "cache" | "fallback";
 
 export interface FxResult {
-  rate: number; // unidades de PEN por 1 unidad de la moneda de origen
-  fecha: string; // fecha legible del dato
-  fuente: FxFuente;
+  rate: number; // units of PEN per 1 unit of the source currency
+  date: string; // human-readable date of the datum
+  source: FxSource;
   nextUpdateUnix?: number;
 }
 
 const cacheKey = (from: string) => `rateequity:fxrate:${from.toUpperCase()}`;
-const hoyISO = () => new Date().toISOString().slice(0, 10);
+const todayISO = () => new Date().toISOString().slice(0, 10);
 
 interface CacheEntry {
   rate: number;
   base: string;
-  fecha: string;
+  date: string;
   fetchedAt: number;
   nextUpdateUnix?: number;
 }
@@ -47,11 +48,11 @@ function writeFxCache(entry: CacheEntry) {
   try {
     localStorage.setItem(cacheKey(entry.base), JSON.stringify(entry));
   } catch {
-    /* sin acceso a cache */
+    /* no cache access */
   }
 }
 
-/** ¿La caché sigue vigente según la señal nextUpdate de la API? */
+/** Is the cache still valid according to the API's nextUpdate signal? */
 export function isFxCacheFresh(entry: CacheEntry | null): boolean {
   if (!entry) return false;
   if (entry.nextUpdateUnix) return Date.now() / 1000 < entry.nextUpdateUnix;
@@ -64,7 +65,7 @@ async function fetchJson(url: string): Promise<unknown> {
   return res.json();
 }
 
-/** Primaria: open.er-api.com (rates.PEN, mayúsculas). */
+/** Primary: open.er-api.com (rates.PEN, uppercase). */
 async function fromOpenErApi(from: string): Promise<FxResult> {
   const json = (await fetchJson(`https://open.er-api.com/v6/latest/${from.toUpperCase()}`)) as {
     result?: string;
@@ -73,49 +74,49 @@ async function fromOpenErApi(from: string): Promise<FxResult> {
     time_next_update_unix?: number;
   };
   if (json.result !== "success" || typeof json.rates?.PEN !== "number") {
-    throw new Error("respuesta inválida open.er-api");
+    throw new Error("invalid open.er-api response");
   }
   return {
     rate: json.rates.PEN,
-    fecha: (json.time_last_update_utc ?? hoyISO()).slice(0, 16),
-    fuente: "api",
+    date: (json.time_last_update_utc ?? todayISO()).slice(0, 16),
+    source: "api",
     nextUpdateUnix: json.time_next_update_unix,
   };
 }
 
-/** Fallback: currency-api (json[from].pen, minúsculas). `host` permite jsDelivr o pages.dev. */
+/** Fallback: currency-api (json[from].pen, lowercase). `host` allows jsDelivr or pages.dev. */
 async function fromCurrencyApi(from: string, host: string): Promise<FxResult> {
   const lower = from.toLowerCase();
   const json = (await fetchJson(`${host}/v1/currencies/${lower}.json`)) as Record<string, unknown> & {
     date?: string;
   };
   const obj = json[lower] as Record<string, number> | undefined;
-  if (!obj || typeof obj.pen !== "number") throw new Error("respuesta inválida currency-api");
-  return { rate: obj.pen, fecha: json.date ?? hoyISO(), fuente: "api" };
+  if (!obj || typeof obj.pen !== "number") throw new Error("invalid currency-api response");
+  return { rate: obj.pen, date: json.date ?? todayISO(), source: "api" };
 }
 
-/** Obtiene la tasa hacia PEN probando cada fuente; nunca lanza (cae a FX_FALLBACK). */
+/** Gets the rate toward PEN trying each source; never throws (falls back to FX_FALLBACK). */
 export async function getRateToPEN(from: string): Promise<FxResult> {
   const code = from.toUpperCase();
-  if (code === "PEN") return { rate: 1, fecha: hoyISO(), fuente: "fallback" };
+  if (code === "PEN") return { rate: 1, date: todayISO(), source: "fallback" };
 
-  const fuentes: Array<() => Promise<FxResult>> = [
+  const sources: Array<() => Promise<FxResult>> = [
     () => fromOpenErApi(code),
     () => fromCurrencyApi(code, "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest"),
     () => fromCurrencyApi(code, "https://latest.currency-api.pages.dev"),
   ];
 
-  for (const fuente of fuentes) {
+  for (const source of sources) {
     try {
-      const r = await fuente();
+      const r = await source();
       if (Number.isFinite(r.rate) && r.rate > 0) {
-        writeFxCache({ rate: r.rate, base: code, fecha: r.fecha, fetchedAt: Date.now(), nextUpdateUnix: r.nextUpdateUnix });
+        writeFxCache({ rate: r.rate, base: code, date: r.date, fetchedAt: Date.now(), nextUpdateUnix: r.nextUpdateUnix });
         return r;
       }
     } catch {
-      /* probar la siguiente fuente */
+      /* try the next source */
     }
   }
 
-  return { rate: FX_FALLBACK[code] ?? 1, fecha: hoyISO(), fuente: "fallback" };
+  return { rate: FX_FALLBACK[code] ?? 1, date: todayISO(), source: "fallback" };
 }

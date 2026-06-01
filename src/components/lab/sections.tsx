@@ -16,22 +16,22 @@ import {
 } from "@/components/common";
 import { Sparkline, WaterfallChart, RadarChart, HBars } from "@/components/lab/Charts";
 import {
-  MODALIDADES,
+  MODALITIES,
   money,
   pct,
-  valorHora,
-  type ModalidadKey,
-  type Modalidad,
+  hourlyValue,
+  type ModalityKey,
+  type Modality,
 } from "@/lib/sample";
 import { THEMES, type ThemeKey } from "@/components/lab/theme";
 import { cn } from "@/lib/cn";
 
 const COLORS = ["var(--c1)", "var(--c2)", "var(--c3)"];
-const getModalidad = (k: ModalidadKey) => MODALIDADES.find((m) => m.key === k)!;
-/** La familia "El Libro Mayor" (incl. V2) comparte diseño de tarjetas. */
+const getModality = (k: ModalityKey) => MODALITIES.find((m) => m.key === k)!;
+/** The "El Libro Mayor" family (incl. V2) shares the card design. */
 const isLedger = (t: ThemeKey) => t.startsWith("ledger");
 
-/* fila contable con puntos guía (El Libro Mayor) */
+/* Accounting row with leader dots (El Libro Mayor) */
 function Row({
   k,
   v,
@@ -61,21 +61,21 @@ function Row({
   );
 }
 
-/* ----- Tarjeta de modalidad: ORIGINAL (Terminal / Claro) ----- */
+/* ----- Modality card: ORIGINAL (Terminal / Claro) ----- */
 function OriginalModalityCard({
   m,
   color,
   active,
   onSelect,
-  horas,
+  hours,
 }: {
-  m: Modalidad;
+  m: Modality;
   color: string;
   active: boolean;
-  onSelect: (k: ModalidadKey) => void;
-  horas: number;
+  onSelect: (k: ModalityKey) => void;
+  hours: number;
 }) {
-  const vh = valorHora(m.liquido, horas);
+  const vh = hourlyValue(m.net, hours);
   return (
     <button onClick={() => onSelect(m.key)} className="text-left" aria-pressed={active}>
       <Card
@@ -88,14 +88,14 @@ function OriginalModalityCard({
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="font-display text-xl font-semibold text-ink">{m.nombre}</h3>
+            <h3 className="font-display text-xl font-semibold text-ink">{m.name}</h3>
             <p className="text-sm text-muted">{m.tagline}</p>
           </div>
           <span className="inline-block size-2.5 shrink-0 rounded-full" style={{ background: color }} />
         </div>
         <div className="mt-5">
           <p className="text-xs text-muted">Liquidez neta / mes</p>
-          <Metric className="text-3xl font-bold text-ink">{money(m.liquido)}</Metric>
+          <Metric className="text-3xl font-bold text-ink">{money(m.net)}</Metric>
         </div>
         <div className="mt-4 flex items-center justify-between">
           <Pill tone={active ? "primary" : "neutral"}>{m.badge}</Pill>
@@ -103,9 +103,9 @@ function OriginalModalityCard({
         </div>
         <Divider className="my-5" />
         <dl className="grid grid-cols-2 gap-y-3 text-sm">
-          <Stat dt="Comp. total" dd={money(m.compTotal)} />
-          <Stat dt="Costo empresa" dd={money(m.costoEmpresa)} />
-          <Stat dt="Carga fiscal" dd={pct(m.cargaPct)} />
+          <Stat dt="Comp. total" dd={money(m.totalComp)} />
+          <Stat dt="Costo empresa" dd={money(m.employerCost)} />
+          <Stat dt="Carga fiscal" dd={pct(m.loadPct)} />
           <Stat dt="Valor / hora" dd={money(vh, { decimals: 1 })} accent />
         </dl>
       </Card>
@@ -113,27 +113,27 @@ function OriginalModalityCard({
   );
 }
 
-/* ----- Tarjeta de modalidad: SELLO (El Libro Mayor), color por modalidad ----- */
-export function SelloModalityCard({
+/* ----- Modality card: STAMP (El Libro Mayor), color per modality ----- */
+export function StampModalityCard({
   m,
   color,
   active,
   onSelect,
-  horas,
-  valorHoraTotal,
-  etiqueta,
+  hours,
+  hourlyValueTotal,
+  label,
   className,
 }: {
-  m: Modalidad;
+  m: Modality;
   color: string;
   active: boolean;
-  onSelect?: (k: ModalidadKey) => void;
-  horas: number;
-  valorHoraTotal?: number;
-  etiqueta?: string;
+  onSelect?: (k: ModalityKey) => void;
+  hours: number;
+  hourlyValueTotal?: number;
+  label?: string;
   className?: string;
 }) {
-  const vh = valorHoraTotal ?? valorHora(m.liquido, horas);
+  const vh = hourlyValueTotal ?? hourlyValue(m.net, hours);
   const content = (
     <div
       className={cn(
@@ -145,32 +145,32 @@ export function SelloModalityCard({
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="font-mono text-[0.66rem] uppercase tracking-[0.2em]" style={{ color }}>
-              {etiqueta ?? "Modalidad"}
+              {label ?? "Modalidad"}
             </p>
-            <h3 className="font-display text-xl font-semibold text-ink">{m.nombre}</h3>
+            <h3 className="font-display text-xl font-semibold text-ink">{m.name}</h3>
             <p className="text-sm text-muted">{m.tagline}</p>
           </div>
           <span
             className="grid size-9 shrink-0 place-items-center rounded-full border border-line font-display text-sm font-bold transition"
             style={active ? { background: color, borderColor: color, color: "var(--on-primary)" } : { color }}
           >
-            {m.nombre.charAt(0)}
+            {m.name.charAt(0)}
           </span>
         </div>
         <Divider className="mt-4" />
       </div>
       <div>
         <p className="text-xs text-muted">Liquidez neta / mes</p>
-        <Metric className="text-3xl font-bold text-ink">{money(m.liquido)}</Metric>
+        <Metric className="text-3xl font-bold text-ink">{money(m.net)}</Metric>
         <div className="mt-2">
           <Pill>{m.badge}</Pill>
         </div>
       </div>
       <div className="border-t border-line pt-3">
         <dl className="grid grid-cols-2 gap-y-2 text-sm">
-          <Stat dt="Comp. total" dd={money(m.compTotal)} />
-          <Stat dt="Costo empresa" dd={money(m.costoEmpresa)} />
-          <Stat dt="Carga fiscal" dd={pct(m.cargaPct)} />
+          <Stat dt="Comp. total" dd={money(m.totalComp)} />
+          <Stat dt="Costo empresa" dd={money(m.employerCost)} />
+          <Stat dt="Carga fiscal" dd={pct(m.loadPct)} />
           <Stat dt="Valor / hora" dd={money(vh, { decimals: 1 })} accent />
         </dl>
       </div>
@@ -195,31 +195,31 @@ export function SelloModalityCard({
   );
 }
 
-/* ----- Tarjeta de equivalencia: ORIGINAL (Terminal / Claro) ----- */
-function OriginalHeroCard({ selected }: { selected: Modalidad }) {
+/* ----- Equivalence card: ORIGINAL (Terminal / Claro) ----- */
+function OriginalHeroCard({ selected }: { selected: Modality }) {
   return (
     <Card ruled className="relative p-6 sm:p-7">
       <div className="flex items-center justify-between">
-        <Eyebrow>{selected.nombre}</Eyebrow>
+        <Eyebrow>{selected.name}</Eyebrow>
         <Pill tone="primary">{selected.badge}</Pill>
       </div>
       <div className="mt-6 flex items-end justify-between gap-4">
         <div>
           <p className="text-sm text-muted">Bruto de portada</p>
           <Metric className="text-2xl text-subtle line-through decoration-loss/60">
-            {money(selected.bruto)}
+            {money(selected.gross)}
           </Metric>
         </div>
         <span className="pb-1 text-2xl text-subtle">→</span>
         <div className="text-right">
           <p className="text-sm text-muted">Líquido real</p>
-          <Metric className="text-4xl font-bold text-ink">{money(selected.liquido)}</Metric>
+          <Metric className="text-4xl font-bold text-ink">{money(selected.net)}</Metric>
         </div>
       </div>
       <Divider className="my-6" />
       <div className="grid grid-cols-2 gap-4">
-        <KpiInline label="Comp. total" value={money(selected.compTotal)} />
-        <KpiInline label="Costo empresa" value={money(selected.costoEmpresa)} tone="loss" />
+        <KpiInline label="Comp. total" value={money(selected.totalComp)} />
+        <KpiInline label="Costo empresa" value={money(selected.employerCost)} tone="loss" />
       </div>
       <p className="mt-6 text-xs text-subtle">
         * Cifras de ejemplo, ilustrativas. El motor de cálculo real se conectará luego.
@@ -228,36 +228,36 @@ function OriginalHeroCard({ selected }: { selected: Modalidad }) {
   );
 }
 
-/* ----- Tarjeta de equivalencia: ANTES → DESPUÉS + deducciones (El Libro Mayor) ----- */
-export function AntesDespuesHero({ m, nota, className }: { m: Modalidad; nota?: string; className?: string }) {
-  const deducciones = m.breakdown.filter((s) => s.kind === "dec");
+/* ----- Equivalence card: BEFORE → AFTER + deductions (El Libro Mayor) ----- */
+export function BeforeAfterHero({ m, note, className }: { m: Modality; note?: string; className?: string }) {
+  const deductions = m.breakdown.filter((s) => s.kind === "dec");
   return (
     <Card className={cn("p-6 sm:p-7", className)}>
       <div className="flex items-center justify-between">
-        <Eyebrow>{m.nombre}</Eyebrow>
+        <Eyebrow>{m.name}</Eyebrow>
         <Pill tone="primary">{m.badge}</Pill>
       </div>
       <div className="mt-7 grid grid-cols-[1fr_auto_1fr] items-center gap-5">
         <div>
           <p className="text-sm text-muted">Bruto de portada</p>
           <Metric className="text-2xl text-subtle line-through decoration-loss/50">
-            {money(m.bruto)}
+            {money(m.gross)}
           </Metric>
         </div>
         <div className="h-12 w-px bg-line-strong" />
         <div className="text-right">
           <p className="text-sm text-muted">Líquido real</p>
-          <Metric className="text-4xl font-bold text-ink">{money(m.liquido)}</Metric>
+          <Metric className="text-4xl font-bold text-ink">{money(m.net)}</Metric>
         </div>
       </div>
       <Divider className="my-6" />
       <p className="mb-1 text-xs uppercase tracking-wider text-muted">En qué se va el bruto</p>
       <div className="font-mono text-sm">
-        {deducciones.map((d) => (
+        {deductions.map((d) => (
           <Row key={d.label} k={d.label} v={money(d.amount, { sign: true })} loss />
         ))}
       </div>
-      {nota && <p className="mt-5 text-xs text-subtle">{nota}</p>}
+      {note && <p className="mt-5 text-xs text-subtle">{note}</p>}
     </Card>
   );
 }
@@ -320,7 +320,7 @@ export function LabNav({
           </div>
         </div>
 
-        {/* Conmutador de tema: el control protagonista */}
+        {/* Theme switcher: the lead control */}
         <div className="flex items-center gap-1 rounded-pill border border-line bg-surface-2 p-1">
           {THEMES.map((t) => (
             <button
@@ -345,7 +345,7 @@ export function LabNav({
 }
 
 /* ----------------------------------- Hero ---------------------------------- */
-export function Hero({ selected, theme }: { selected: Modalidad; theme: ThemeKey }) {
+export function Hero({ selected, theme }: { selected: Modality; theme: ThemeKey }) {
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 sm:py-24 lg:grid-cols-[1.05fr_0.95fr]">
@@ -382,10 +382,10 @@ export function Hero({ selected, theme }: { selected: Modalidad; theme: ThemeKey
           </div>
         </div>
 
-        {/* Tarjeta-prueba: bruto ≠ líquido */}
+        {/* Proof card: gross ≠ net */}
         <div className="animate-fade-up [animation-delay:120ms] motion-reduce:animate-none">
           {isLedger(theme) ? (
-            <AntesDespuesHero m={selected} />
+            <BeforeAfterHero m={selected} />
           ) : (
             <OriginalHeroCard selected={selected} />
           )}
@@ -420,22 +420,22 @@ function KpiInline({
   );
 }
 
-/* ------------------------------- Calculadora ------------------------------- */
+/* ------------------------------- Calculator ------------------------------- */
 export function CalculatorPanel({
-  modalidad,
-  setModalidad,
-  horas,
-  setHoras,
+  modality,
+  setModality,
+  hours,
+  setHours,
 }: {
-  modalidad: ModalidadKey;
-  setModalidad: (m: ModalidadKey) => void;
-  horas: number;
-  setHoras: (h: number) => void;
+  modality: ModalityKey;
+  setModality: (m: ModalityKey) => void;
+  hours: number;
+  setHours: (h: number) => void;
 }) {
-  const m = getModalidad(modalidad);
-  const [beneficios, setBeneficios] = useState(true);
-  const [costoEmpresa, setCostoEmpresa] = useState(true);
-  const vh = valorHora(m.liquido, horas);
+  const m = getModality(modality);
+  const [benefits, setBenefits] = useState(true);
+  const [employerCost, setEmployerCost] = useState(true);
+  const vh = hourlyValue(m.net, hours);
 
   return (
     <Section
@@ -451,20 +451,20 @@ export function CalculatorPanel({
             <Field label="Modalidad de contratación">
               <SegmentedControl
                 aria-label="Modalidad"
-                value={modalidad}
-                onChange={setModalidad}
-                options={MODALIDADES.map((x) => ({ value: x.key, label: x.nombre }))}
+                value={modality}
+                onChange={setModality}
+                options={MODALITIES.map((x) => ({ value: x.key, label: x.name }))}
               />
             </Field>
 
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label="Bruto mensual" hint="USD">
-                <Input defaultValue={m.bruto.toLocaleString("en-US")} inputMode="numeric" />
+                <Input defaultValue={m.gross.toLocaleString("en-US")} inputMode="numeric" />
               </Field>
-              <Field label="País" htmlFor="pais">
+              <Field label="País" htmlFor="country">
                 <div className="relative">
                   <select
-                    id="pais"
+                    id="country"
                     defaultValue="pe"
                     className="w-full appearance-none rounded-input border border-line-strong bg-surface-2 px-3 py-2.5 text-[0.95rem] text-ink transition focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25"
                   >
@@ -490,23 +490,23 @@ export function CalculatorPanel({
 
             <Field
               label="Horas efectivas por semana"
-              hint={`${horas} h`}
-              htmlFor="horas"
+              hint={`${hours} h`}
+              htmlFor="hours"
             >
               <input
-                id="horas"
+                id="hours"
                 type="range"
                 min={10}
                 max={60}
                 step={1}
-                value={horas}
-                onChange={(e) => setHoras(Number(e.target.value))}
+                value={hours}
+                onChange={(e) => setHours(Number(e.target.value))}
                 className={cn(
                   "w-full cursor-pointer appearance-none bg-transparent",
-                  // pista
+                  // track
                   "[&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-pill [&::-webkit-slider-runnable-track]:bg-line-strong",
                   "[&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-pill [&::-moz-range-track]:bg-line-strong",
-                  // pulgar (pseudo-elementos: utilidades arbitrarias, sin CSS suelto)
+                  // thumb (pseudo-elements: arbitrary utilities, no loose CSS)
                   "[&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-surface [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow",
                   "[&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-surface [&::-moz-range-thumb]:bg-primary",
                 )}
@@ -521,14 +521,14 @@ export function CalculatorPanel({
                   Valorizar beneficios laborales
                   <InfoDot content="Aguinaldo, vacaciones, CTS, seguro y otros beneficios convertidos a su valor mensual equivalente." />
                 </span>
-                <Toggle checked={beneficios} onChange={setBeneficios} label="Valorizar beneficios" />
+                <Toggle checked={benefits} onChange={setBenefits} label="Valorizar beneficios" />
               </label>
               <label className="flex items-center justify-between gap-3">
                 <span className="flex items-center gap-2 text-sm font-medium text-ink">
                   Mostrar costo para la empresa
                   <InfoDot content="Incluye aportes patronales y cargas que paga el empleador, además del bruto." />
                 </span>
-                <Toggle checked={costoEmpresa} onChange={setCostoEmpresa} label="Mostrar costo empresa" />
+                <Toggle checked={employerCost} onChange={setEmployerCost} label="Mostrar costo empresa" />
               </label>
             </div>
 
@@ -538,13 +538,13 @@ export function CalculatorPanel({
           </div>
         </Card>
 
-        {/* Resultado en vivo */}
+        {/* Live result */}
         <Card ruled className="flex flex-col justify-between gap-6 bg-surface-2 p-6">
           <div>
             <Eyebrow>Resultado en vivo</Eyebrow>
             <p className="mt-2 text-sm text-muted">
               Valor por hora efectiva de{" "}
-              <span className="font-semibold text-ink">{m.nombre}</span> a {horas}{" "}
+              <span className="font-semibold text-ink">{m.name}</span> a {hours}{" "}
               h/semana
             </p>
             <div className="mt-4 flex items-end gap-2">
@@ -555,8 +555,8 @@ export function CalculatorPanel({
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <KpiInline label="Líquido / mes" value={money(m.liquido)} tone="profit" />
-            <KpiInline label="Carga fiscal" value={pct(m.cargaPct)} tone="loss" />
+            <KpiInline label="Líquido / mes" value={money(m.net)} tone="profit" />
+            <KpiInline label="Carga fiscal" value={pct(m.loadPct)} tone="loss" />
           </div>
           <p className="text-xs text-subtle">
             Mueve el slider de horas y cambia la modalidad: este número responde
@@ -568,16 +568,16 @@ export function CalculatorPanel({
   );
 }
 
-/* ---------------------------- Tarjetas comparación ---------------------------- */
+/* ---------------------------- Comparison cards ---------------------------- */
 export function ComparisonCards({
   selected,
-  horas,
+  hours,
   onSelect,
   theme,
 }: {
-  selected: ModalidadKey;
-  horas: number;
-  onSelect: (m: ModalidadKey) => void;
+  selected: ModalityKey;
+  hours: number;
+  onSelect: (m: ModalityKey) => void;
   theme: ThemeKey;
 }) {
   return (
@@ -589,15 +589,15 @@ export function ComparisonCards({
       desc="Una tarjeta por modalidad. La seleccionada se resalta; cada una resume la historia económica completa."
     >
       <div className="grid gap-5 md:grid-cols-3">
-        {MODALIDADES.map((m, i) =>
+        {MODALITIES.map((m, i) =>
           isLedger(theme) ? (
-            <SelloModalityCard
+            <StampModalityCard
               key={m.key}
               m={m}
               color={COLORS[i]}
               active={m.key === selected}
               onSelect={onSelect}
-              horas={horas}
+              hours={hours}
             />
           ) : (
             <OriginalModalityCard
@@ -606,7 +606,7 @@ export function ComparisonCards({
               color={COLORS[i]}
               active={m.key === selected}
               onSelect={onSelect}
-              horas={horas}
+              hours={hours}
             />
           ),
         )}
@@ -631,11 +631,11 @@ function Stat({ dt, dd, accent }: { dt: string; dd: string; accent?: boolean }) 
   );
 }
 
-/* -------------------------------- Gráficos -------------------------------- */
-export function ChartsBlock({ selected }: { selected: ModalidadKey }) {
-  const m = getModalidad(selected);
-  const maxLiquido = Math.max(...MODALIDADES.map((x) => x.liquido));
-  const maxCosto = Math.max(...MODALIDADES.map((x) => x.costoEmpresa));
+/* -------------------------------- Charts -------------------------------- */
+export function ChartsBlock({ selected }: { selected: ModalityKey }) {
+  const m = getModality(selected);
+  const maxNet = Math.max(...MODALITIES.map((x) => x.net));
+  const maxCost = Math.max(...MODALITIES.map((x) => x.employerCost));
 
   return (
     <Section
@@ -649,7 +649,7 @@ export function ChartsBlock({ selected }: { selected: ModalidadKey }) {
         <Card className="p-6 lg:col-span-2">
           <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="font-display text-lg font-semibold text-ink">
-              Del bruto al líquido · {m.nombre}
+              Del bruto al líquido · {m.name}
             </h3>
             <Pill tone="neutral">Waterfall</Pill>
           </div>
@@ -667,10 +667,10 @@ export function ChartsBlock({ selected }: { selected: ModalidadKey }) {
             Liquidez neta / mes
           </p>
           <HBars
-            max={maxLiquido}
-            rows={MODALIDADES.map((x, i) => ({
-              label: x.nombre,
-              value: x.liquido,
+            max={maxNet}
+            rows={MODALITIES.map((x, i) => ({
+              label: x.name,
+              value: x.net,
               color: COLORS[i],
               highlight: x.key === selected,
             }))}
@@ -680,10 +680,10 @@ export function ChartsBlock({ selected }: { selected: ModalidadKey }) {
             Costo para la empresa
           </p>
           <HBars
-            max={maxCosto}
-            rows={MODALIDADES.map((x, i) => ({
-              label: x.nombre,
-              value: x.costoEmpresa,
+            max={maxCost}
+            rows={MODALITIES.map((x, i) => ({
+              label: x.name,
+              value: x.employerCost,
               color: COLORS[i],
               highlight: x.key === selected,
             }))}
@@ -704,16 +704,16 @@ export function ChartsBlock({ selected }: { selected: ModalidadKey }) {
   );
 }
 
-/* ----------------------------- Tabla de desglose ----------------------------- */
-export function BreakdownTable({ horas }: { horas: number }) {
-  const rows: { label: string; get: (m: Modalidad) => string; emphasis?: boolean; tone?: "loss" | "profit" }[] = [
-    { label: "Bruto mensual", get: (m) => money(m.bruto) },
-    { label: "Carga tributaria", get: (m) => pct(m.cargaPct), tone: "loss" },
-    { label: "Líquido (bolsillo)", get: (m) => money(m.liquido), emphasis: true, tone: "profit" },
-    { label: "Beneficios valorizados", get: (m) => money(m.beneficios) },
-    { label: "Compensación total", get: (m) => money(m.compTotal), emphasis: true },
-    { label: "Costo para la empresa", get: (m) => money(m.costoEmpresa), tone: "loss" },
-    { label: "Valor / hora efectiva", get: (m) => money(valorHora(m.liquido, horas), { decimals: 1 }) },
+/* ----------------------------- Breakdown table ----------------------------- */
+export function BreakdownTable({ hours }: { hours: number }) {
+  const rows: { label: string; get: (m: Modality) => string; emphasis?: boolean; tone?: "loss" | "profit" }[] = [
+    { label: "Bruto mensual", get: (m) => money(m.gross) },
+    { label: "Carga tributaria", get: (m) => pct(m.loadPct), tone: "loss" },
+    { label: "Líquido (bolsillo)", get: (m) => money(m.net), emphasis: true, tone: "profit" },
+    { label: "Beneficios valorizados", get: (m) => money(m.benefits) },
+    { label: "Compensación total", get: (m) => money(m.totalComp), emphasis: true },
+    { label: "Costo para la empresa", get: (m) => money(m.employerCost), tone: "loss" },
+    { label: "Valor / hora efectiva", get: (m) => money(hourlyValue(m.net, hours), { decimals: 1 }) },
   ];
 
   return (
@@ -732,7 +732,7 @@ export function BreakdownTable({ horas }: { horas: number }) {
                 <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-muted">
                   Concepto
                 </th>
-                {MODALIDADES.map((m, i) => (
+                {MODALITIES.map((m, i) => (
                   <th
                     key={m.key}
                     className="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wider"
@@ -742,7 +742,7 @@ export function BreakdownTable({ horas }: { horas: number }) {
                         className="inline-block size-2 rounded-full"
                         style={{ background: COLORS[i] }}
                       />
-                      {m.nombre}
+                      {m.name}
                     </span>
                   </th>
                 ))}
@@ -765,7 +765,7 @@ export function BreakdownTable({ horas }: { horas: number }) {
                   >
                     {r.label}
                   </td>
-                  {MODALIDADES.map((m) => (
+                  {MODALITIES.map((m) => (
                     <td
                       key={m.key}
                       className={cn(
@@ -788,7 +788,7 @@ export function BreakdownTable({ horas }: { horas: number }) {
   );
 }
 
-/* ------------------------------ Kit de átomos ------------------------------ */
+/* ------------------------------ Atoms kit ------------------------------ */
 export function AtomsShowcase() {
   const [seg, setSeg] = useState<"a" | "b" | "c">("a");
   const [t1, setT1] = useState(true);

@@ -1,18 +1,18 @@
 /**
- * Fuente única de las monedas soportadas. De aquí se derivan el selector de la
- * UI (`MONEDA_OPTIONS`) y las tasas de respaldo offline (`FX_FALLBACK`), así que
- * agregar una moneda es añadir una sola entrada a `CURRENCIES`.
+ * Single source of supported currencies. The UI selector (`CURRENCY_OPTIONS`)
+ * and the offline fallback rates (`FX_FALLBACK`) are derived from here, so
+ * adding a currency means adding a single entry to `CURRENCIES`.
  *
- * `fallbackPEN` (soles por 1 unidad) es aproximado y SOLO se usa como último
- * recurso si fallan todas las fuentes de tipo de cambio en vivo; en operación
- * normal el valor proviene de la API.
+ * `fallbackPEN` (soles per 1 unit) is approximate and is used ONLY as a last
+ * resort if every live exchange-rate source fails; under normal operation the
+ * value comes from the API.
  */
 export interface Currency {
   code: string; // ISO 4217
-  label: string; // nombre legible
-  symbol: string; // símbolo para inputs
-  flag: string; // bandera (emoji)
-  fallbackPEN: number; // soles por 1 unidad (respaldo offline)
+  label: string; // human-readable name
+  symbol: string; // symbol for inputs
+  flag: string; // flag (emoji)
+  fallbackPEN: number; // soles per 1 unit (offline fallback)
 }
 
 export const CURRENCIES = [
@@ -29,13 +29,13 @@ export const CURRENCIES = [
   { code: "PYG", label: "Guaraní", symbol: "₲", flag: "🇵🇾", fallbackPEN: 0.00051 },
 ] as const satisfies readonly Currency[];
 
-export type Moneda = (typeof CURRENCIES)[number]["code"];
+export type CurrencyCode = (typeof CURRENCIES)[number]["code"];
 
-/** Opciones para los selectores de moneda (derivadas del registro). */
-export const MONEDA_OPTIONS: { value: Moneda; label: string; symbol: string; flag: string }[] =
+/** Options for the currency selectors (derived from the registry). */
+export const CURRENCY_OPTIONS: { value: CurrencyCode; label: string; symbol: string; flag: string }[] =
   CURRENCIES.map((c) => ({ value: c.code, label: c.label, symbol: c.symbol, flag: c.flag }));
 
-/** Tasas de respaldo offline (soles por 1 unidad), derivadas del registro. */
+/** Offline fallback rates (soles per 1 unit), derived from the registry. */
 export const FX_FALLBACK: Record<string, number> = Object.fromEntries(
   CURRENCIES.map((c) => [c.code, c.fallbackPEN]),
 );

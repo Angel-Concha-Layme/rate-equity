@@ -11,7 +11,7 @@ export function Card({
     <div
       className={cn(
         "bg-surface border border-line rounded-card shadow-card",
-        // El Libro Mayor: filete superior tipo contabilidad (esquinas redondeadas como "Claro")
+        // Ledger theme: accounting-style top rule (rounded corners like "Clarity")
         ruled && "theme-ledger:border-t-2 theme-ledger:border-t-ink",
         className,
       )}

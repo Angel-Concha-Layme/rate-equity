@@ -1,24 +1,24 @@
 import { Card } from "@/components/common";
 import { pct } from "@/lib/sample";
-import { getStrategy, type Resultado } from "@/lib/calc";
+import { getStrategy, type Result } from "@/lib/calc";
 import { cn } from "@/lib/cn";
 
-/** Tabla de detalle anual comparando tu modalidad con la equivalente. */
+/** Annual detail table comparing your modality with the equivalent one. */
 export function DetailTable({
-  tuyo,
-  equivalente,
-  pais,
+  yours,
+  equivalent,
+  country,
   className,
 }: {
-  tuyo: Resultado;
-  equivalente: Resultado;
-  pais: string;
+  yours: Result;
+  equivalent: Result;
+  country: string;
   className?: string;
 }) {
-  const strat = getStrategy(pais);
-  const rows = strat.detalleRows();
-  const fmt = { money: strat.money, pct };
-  const cols = [tuyo, equivalente];
+  const strategy = getStrategy(country);
+  const rows = strategy.detailRows();
+  const fmt = { money: strategy.money, pct };
+  const cols = [yours, equivalent];
   return (
     <Card className={cn("overflow-hidden", className)}>
       <div className="overflow-x-auto">
@@ -34,7 +34,7 @@ export function DetailTable({
                       style={{ background: i === 0 ? "var(--c1)" : "var(--c2)" }}
                     />
                     {i === 0 ? "Tú · " : ""}
-                    {x.nombre}
+                    {x.name}
                   </span>
                 </th>
               ))}

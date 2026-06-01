@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 import { useListbox } from "@/lib/useListbox";
 
-/** Select custom (no nativo), alineado al tema. Teclado: flechas, Enter, Home/End, Escape. */
+/** Custom (non-native) select, theme-aligned. Keyboard: arrows, Enter, Home/End, Escape. */
 export function Dropdown<T extends string>({
   value,
   onChange,

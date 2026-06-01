@@ -10,18 +10,18 @@ interface ToastItem {
   id: number;
   message: string;
   tone: ToastTone;
-  leaving?: boolean; // en animación de salida, antes de removerse
+  leaving?: boolean; // in the exit animation, before being removed
 }
 
-// Máximo de toasts visibles a la vez. Al superarlo, se descartan los más
-// antiguos (útil al presionar un toggle repetidamente). Fácilmente editable.
+// Maximum number of toasts visible at once. Beyond it, the oldest ones are
+// discarded (useful when pressing a toggle repeatedly). Easily editable.
 const MAX_TOASTS = 3;
 
-// Duración de la animación de salida (debe coincidir con --animate-fade-out).
+// Duration of the exit animation (must match --animate-fade-out).
 const EXIT_MS = 200;
 
-// Store externo mínimo (mismo patrón que useScenario): permite disparar toasts
-// desde cualquier parte sin contexto ni props.
+// Minimal external store (same pattern as useScenario): lets us trigger toasts
+// from anywhere without context or props.
 let items: ToastItem[] = [];
 const listeners = new Set<() => void>();
 let nextId = 1;
@@ -30,7 +30,7 @@ function emit() {
   for (const listener of listeners) listener();
 }
 
-/** Quita un toast tras animar su salida. */
+/** Removes a toast after animating its exit. */
 function dismiss(id: number) {
   items = items.map((t) => (t.id === id ? { ...t, leaving: true } : t));
   emit();
@@ -40,11 +40,11 @@ function dismiss(id: number) {
   }, EXIT_MS);
 }
 
-/** Muestra un toast; se autodescarta tras `durationMs`. */
+/** Shows a toast; it auto-dismisses after `durationMs`. */
 export function toast(message: string, opts: { tone?: ToastTone; durationMs?: number } = {}) {
   const { tone = "neutral", durationMs = 3000 } = opts;
   const id = nextId++;
-  // Conserva solo los últimos MAX_TOASTS; los anteriores se descartan al instante.
+  // Keep only the latest MAX_TOASTS; earlier ones are discarded instantly.
   items = [...items, { id, message, tone }].slice(-MAX_TOASTS);
   emit();
   setTimeout(() => dismiss(id), durationMs);
@@ -59,10 +59,10 @@ function subscribe(listener: () => void) {
 
 const EMPTY: ToastItem[] = [];
 
-// Detección de montaje en cliente sin setState-en-efecto: useSyncExternalStore
-// devuelve el snapshot de servidor (false) en SSR y en el primer render de
-// hidratación, y el de cliente (true) tras montar. Así el portal solo aparece
-// en cliente sin provocar mismatch de hidratación.
+// Client-mount detection without setState-in-effect: useSyncExternalStore
+// returns the server snapshot (false) during SSR and on the first hydration
+// render, and the client one (true) after mounting. This way the portal only
+// appears on the client without causing a hydration mismatch.
 const subscribeMounted = () => () => {};
 function useMounted() {
   return useSyncExternalStore(
@@ -73,9 +73,9 @@ function useMounted() {
 }
 
 /**
- * Contenedor de toasts. Se monta una vez (en el layout raíz) y se renderiza en
- * un portal sobre `document.body`: queda por encima por orden del DOM, sin
- * recurrir a z-index.
+ * Toast container. Mounted once (in the root layout) and rendered into a portal
+ * over `document.body`: it stays on top by DOM order, without resorting to
+ * z-index.
  */
 export function Toaster() {
   const list = useSyncExternalStore(subscribe, () => items, () => EMPTY);

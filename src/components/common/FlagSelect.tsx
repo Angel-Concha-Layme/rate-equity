@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 import { useListbox } from "@/lib/useListbox";
 
-/** Dropdown que pinta bandera + etiqueta (+ sub). Teclado: flechas, Enter, Home/End, Escape. */
+/** Dropdown that renders flag + label (+ sub). Keyboard: arrows, Enter, Home/End, Escape. */
 export function FlagSelect<T extends string>({
   value,
   onChange,

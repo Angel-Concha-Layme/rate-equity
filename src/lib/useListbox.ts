@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-const GAP = 6; // separación entre el disparador y el popup (px)
-const MARGIN = 8; // margen mínimo respecto al borde del viewport (px)
+const GAP = 6; // gap between the trigger and the popup (px)
+const MARGIN = 8; // minimum margin from the viewport edge (px)
 
 export interface ListboxCoords {
   top: number;
@@ -12,12 +12,12 @@ export interface ListboxCoords {
 }
 
 /**
- * Lógica de listbox accesible (abrir/cerrar, navegación con flechas, Enter,
- * Home/End, Escape, click-fuera) compartida por Dropdown y FlagSelect.
+ * Accessible listbox logic (open/close, arrow navigation, Enter, Home/End,
+ * Escape, click-outside) shared by Dropdown and FlagSelect.
  *
- * El popup se renderiza en un portal sobre `document.body` (de ahí `popupRef` y
- * `coords`): así escapa del `overflow` de la sidebar y del orden de pintado de
- * los hermanos posicionados (p. ej. los toggles), sin recurrir a z-index.
+ * The popup is rendered in a portal over `document.body` (hence `popupRef` and
+ * `coords`): this escapes the sidebar's `overflow` and the paint order of
+ * positioned siblings (e.g. the toggles), without resorting to z-index.
  */
 export function useListbox<T extends string>(
   options: { value: T; disabled?: boolean }[],
@@ -38,7 +38,7 @@ export function useListbox<T extends string>(
     const popupH = popupRef.current?.offsetHeight ?? 0;
     const vh = document.documentElement.clientHeight;
     const below = r.bottom + GAP;
-    // Por defecto debajo; si no cabe y sí cabe arriba, se voltea hacia arriba.
+    // Below by default; if it does not fit and fits above, it flips upward.
     const fitsBelow = below + popupH <= vh - MARGIN;
     const top = !fitsBelow && r.top - GAP - popupH >= MARGIN ? r.top - GAP - popupH : below;
     setCoords({ top, left: r.left, width: r.width });

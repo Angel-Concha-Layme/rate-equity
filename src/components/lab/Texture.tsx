@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import type { ThemeKey } from "./theme";
 
-/** Fondo decorativo por tema. Valor dinámico -> estilo inline (no es clase). */
+/** Decorative background per theme. Dynamic value -> inline style (not a class). */
 const LEDGER_TEX =
   "repeating-linear-gradient(to bottom, transparent 0 31px, rgba(28,26,20,0.035) 31px 32px), radial-gradient(120% 80% at 100% 0%, rgba(154,106,28,0.06), transparent 60%)";
 
@@ -15,9 +15,9 @@ const TEXTURES: Record<ThemeKey, string> = {
 };
 
 /**
- * Estilo de fondo decorativo para aplicar en el contenedor raíz de la página.
- * Como es un `background` (no un overlay posicionado), siempre queda detrás del
- * contenido sin necesidad de z-index. `fixed` da el efecto de fondo estático.
+ * Decorative background style to apply on the page root container.
+ * Since it is a `background` (not a positioned overlay), it always stays behind
+ * the content without needing z-index. `fixed` gives the static background effect.
  */
 export function textureStyle(theme: ThemeKey): CSSProperties {
   return {

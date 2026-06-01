@@ -27,7 +27,7 @@ function VariantFrame({
   );
 }
 
-export default function LibroMayorPage() {
+export default function LedgerPage() {
   return (
     <div data-theme="ledger" style={textureStyle("ledger")} className="min-h-screen bg-canvas font-sans text-ink selection:bg-accent/25">
       <header className="sticky top-0 border-b border-line bg-canvas/80 backdrop-blur-md">
@@ -52,7 +52,7 @@ export default function LibroMayorPage() {
           una tiene nombre. Dime cuál te gusta (o combina ideas) y la aplico al tema.
         </p>
 
-        {/* --------------------------- Modalidad --------------------------- */}
+        {/* --------------------------- Modality --------------------------- */}
         <section className="mt-16">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line-strong pb-3">
             <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
@@ -71,7 +71,7 @@ export default function LibroMayorPage() {
           </div>
         </section>
 
-        {/* ------------------------- Equivalencia ------------------------- */}
+        {/* ------------------------- Equivalence ------------------------- */}
         <section className="mt-20">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line-strong pb-3">
             <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">

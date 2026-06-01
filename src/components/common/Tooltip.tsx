@@ -4,8 +4,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 
-const GAP = 8; // separación entre el disparador y el globo (px)
-const MARGIN = 8; // margen mínimo respecto a los bordes del viewport (px)
+const GAP = 8; // spacing between the trigger and the bubble (px)
+const MARGIN = 8; // minimum margin from the viewport edges (px)
 
 interface Coords {
   top: number;
@@ -13,11 +13,11 @@ interface Coords {
 }
 
 /**
- * Tooltip anclado al disparador pero renderizado en un portal sobre
- * `document.body` con `position: fixed`. Así escapa de cualquier ancestro con
- * `overflow` (p. ej. la sidebar con scroll) que de otro modo lo recortaría, sin
- * recurrir a z-index: al montarse al final del body queda por encima por orden
- * del DOM, igual que el Modal.
+ * Tooltip anchored to the trigger but rendered into a portal over
+ * `document.body` with `position: fixed`. This escapes any ancestor with
+ * `overflow` (e.g. the scrolling sidebar) that would otherwise clip it, without
+ * resorting to z-index: by mounting at the end of the body it stays on top by
+ * DOM order, just like the Modal.
  */
 export function Tooltip({
   content,
@@ -43,11 +43,11 @@ export function Tooltip({
     const bubbleH = bubble?.offsetHeight ?? 0;
     const vw = document.documentElement.clientWidth;
 
-    // Centrado horizontal sobre el disparador, recortado al viewport.
+    // Horizontally centered over the trigger, clamped to the viewport.
     let left = rect.left + rect.width / 2 - bubbleW / 2;
     left = Math.max(MARGIN, Math.min(left, vw - bubbleW - MARGIN));
 
-    // Por defecto encima; si no cabe arriba, debajo del disparador.
+    // Above by default; if it doesn't fit there, below the trigger.
     const fitsAbove = rect.top - GAP - bubbleH >= MARGIN;
     const top = fitsAbove ? rect.top - GAP - bubbleH : rect.bottom + GAP;
 

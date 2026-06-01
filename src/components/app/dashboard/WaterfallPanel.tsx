@@ -1,25 +1,25 @@
 import { Card } from "@/components/common";
 import { WaterfallChart } from "@/components/lab/Charts";
 import { PanelHeader } from "@/components/app/dashboard/PanelHeader";
-import type { Resultado } from "@/lib/calc";
+import type { Result } from "@/lib/calc";
 import type { MoneyFn } from "@/lib/sample";
 import { cn } from "@/lib/cn";
 
-/** Panel con el desglose en cascada (waterfall) de una modalidad. */
+/** Panel with the waterfall breakdown of a modality. */
 export function WaterfallPanel({
   res,
   money,
   className,
 }: {
-  res: Resultado;
+  res: Result;
   money: MoneyFn;
   className?: string;
 }) {
   return (
     <Card className={cn("flex flex-col p-5", className)}>
-      <PanelHeader titulo={`Del bruto al valor total · ${res.nombre}`} tipo="Waterfall" />
-      {/* relative + svg absoluto: el chart llena la altura de la fila (que define
-          el ModalityCard) sin aportar altura propia al cálculo del layout. */}
+      <PanelHeader title={`Del bruto al valor total · ${res.name}`} type="Waterfall" />
+      {/* relative + absolute svg: the chart fills the row height (defined by the
+          ModalityCard) without contributing its own height to layout. */}
       <div className="relative min-h-0 flex-1">
         <WaterfallChart steps={res.breakdown} money={money} className="absolute inset-0 h-full w-full" />
       </div>

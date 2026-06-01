@@ -1,33 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { MODALIDADES, RADAR_AXES, money, type BreakdownStep, type Modalidad, type MoneyFn } from "@/lib/sample";
+import { MODALITIES, RADAR_AXES, money, type BreakdownStep, type Modality, type MoneyFn } from "@/lib/sample";
 import { RadarTooltip } from "@/components/app/dashboard/RadarTooltip";
 
-/** Cursor "ojo" (SVG inline) para señalar que el eje revela información. */
+/** "Eye" cursor (inline SVG) to signal that the axis reveals information. */
 const EYE_CURSOR =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%231b2a4a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E\") 11 11, pointer";
 
-/** Qué representa cada eje del radar (el "por qué" de la diferencia). */
-const AXIS_RAZON: Record<string, string> = {
-  liquidez: "Efectivo neto que recibes cada mes.",
-  compTotal: "Valor económico total; el equivalente se calcula para igualarlo.",
-  beneficios: "Gratificaciones, CTS y salud valorizados al mes.",
-  estabilidad: "Continuidad del ingreso y protección laboral.",
-  flexibilidad: "Libertad de horario, clientes y forma de trabajo.",
+/** What each radar axis represents (the "why" of the difference). */
+const AXIS_REASON: Record<string, string> = {
+  liquidity: "Efectivo neto que recibes cada mes.",
+  totalComp: "Valor económico total; el equivalente se calcula para igualarlo.",
+  benefits: "Gratificaciones, CTS y salud valorizados al mes.",
+  stability: "Continuidad del ingreso y protección laboral.",
+  flexibility: "Libertad de horario, clientes y forma de trabajo.",
 };
 
-/** Valor a mostrar por eje y modalidad (money para los monetarios, cualitativo para el resto). */
-function valorEje(key: keyof Modalidad["radar"], m: Modalidad, fmt: MoneyFn): string {
-  if (key === "liquidez") return `${fmt(m.liquido)}/mes`;
-  if (key === "compTotal") return `${fmt(m.compTotal)}/mes`;
-  if (key === "beneficios") return `${fmt(m.beneficios)}/mes`;
+/** Value to show per axis and modality (money for monetary ones, qualitative for the rest). */
+function axisValue(key: keyof Modality["radar"], m: Modality, fmt: MoneyFn): string {
+  if (key === "liquidity") return `${fmt(m.net)}/mes`;
+  if (key === "totalComp") return `${fmt(m.totalComp)}/mes`;
+  if (key === "benefits") return `${fmt(m.benefits)}/mes`;
   const s = m.radar[key];
   return s >= 66 ? "Alta" : s >= 33 ? "Media" : "Baja";
 }
 
 /* ------------------------------------------------------------------ *
- * Sparkline: estabilidad del ingreso mes a mes
+ * Sparkline: month-to-month income stability
  * ------------------------------------------------------------------ */
 export function Sparkline({
   data,
@@ -67,7 +67,7 @@ export function Sparkline({
 }
 
 /* ------------------------------------------------------------------ *
- * Waterfall: bruto -> deducciones -> líquido -> beneficios -> total
+ * Waterfall: gross -> deductions -> net -> benefits -> total
  * ------------------------------------------------------------------ */
 function wrapLabel(label: string): string[] {
   if (label.length <= 11) return [label];
@@ -156,7 +156,7 @@ export function WaterfallChart({
       aria-label="Desglose en cascada del bruto al neto y compensación total"
       className={className}
     >
-      {/* línea base */}
+      {/* baseline */}
       <line x1={PL} y1={y(0)} x2={W - PR} y2={y(0)} stroke="var(--chart-axis)" strokeWidth="1" />
 
       {bars.map((b, i) => {
@@ -171,7 +171,7 @@ export function WaterfallChart({
         const arrow = b.kind === "dec" ? "▾ " : b.kind === "inc" ? "▴ " : "";
         return (
           <g key={i}>
-            {/* conector punteado */}
+            {/* dotted connector */}
             {i < n - 1 && (
               <line
                 x1={b.cx + barW / 2}
@@ -184,13 +184,13 @@ export function WaterfallChart({
                 opacity="0.8"
               />
             )}
-            {/* barra */}
+            {/* bar */}
             {b.amount === 0 ? (
               <line x1={b.cx - barW / 2} y1={y(b.runAfter)} x2={b.cx + barW / 2} y2={y(b.runAfter)} stroke={color} strokeWidth="2" />
             ) : (
               <rect x={b.cx - barW / 2} y={top} width={barW} height={h} rx="3" fill={color} />
             )}
-            {/* etiqueta de valor */}
+            {/* value label */}
             <text
               x={b.cx}
               y={top - 9}
@@ -203,7 +203,7 @@ export function WaterfallChart({
               {arrow}
               {labelText}
             </text>
-            {/* etiqueta de eje X */}
+            {/* X-axis label */}
             {wrapLabel(b.label).map((ln, li, arr) => (
               <text
                 key={li}
@@ -225,7 +225,7 @@ export function WaterfallChart({
 }
 
 /* ------------------------------------------------------------------ *
- * HBars: comparación horizontal entre modalidades (HTML/CSS)
+ * HBars: horizontal comparison between modalities (HTML/CSS)
  * ------------------------------------------------------------------ */
 export function HBars({
   rows,
@@ -259,14 +259,14 @@ export function HBars({
 }
 
 /* ------------------------------------------------------------------ *
- * Radar: comparación multi-atributo
+ * Radar: multi-attribute comparison
  * ------------------------------------------------------------------ */
 export function RadarChart({
-  modalidades = MODALIDADES,
+  modalities = MODALITIES,
   money: fmt = money,
-}: { modalidades?: Modalidad[]; money?: MoneyFn } = {}) {
-  // viewBox más ancho que alto: deja margen horizontal para las etiquetas
-  // laterales (antes se recortaban). El svg se dimensiona por ancho.
+}: { modalities?: Modality[]; money?: MoneyFn } = {}) {
+  // viewBox wider than tall: leaves horizontal margin for the side labels
+  // (they used to be clipped). The svg is sized by width.
   const W = 440;
   const H = 360;
   const cx = W / 2;
@@ -295,7 +295,7 @@ export function RadarChart({
           role="img"
           aria-label="Comparación de modalidades por atributo"
         >
-          {/* anillos */}
+          {/* rings */}
           {rings.map((ring, ri) => (
             <polygon
               key={ri}
@@ -306,11 +306,11 @@ export function RadarChart({
             />
           ))}
           {/* series */}
-          {modalidades.map((m, mi) => {
+          {modalities.map((m, mi) => {
             const pts = axes.map((ax, i) => polar((R * m.radar[ax.key]) / 100, i).join(",")).join(" ");
             return <polygon key={m.key} points={pts} fill={colors[mi]} fillOpacity="0.13" stroke={colors[mi]} strokeWidth="2" strokeLinejoin="round" />;
           })}
-          {/* radios + etiquetas (con zona de hover por arista) */}
+          {/* radii + labels (with a per-edge hover zone) */}
           {axes.map((ax, i) => {
             const [ex, ey] = polar(R, i);
             const [lx, ly] = polar(R + 20, i);
@@ -331,7 +331,7 @@ export function RadarChart({
                   stroke={active ? "var(--chart-axis, var(--muted))" : "var(--chart-grid)"}
                   strokeWidth={active ? 1.5 : 1}
                 />
-                {/* zona invisible para facilitar el hover sobre la etiqueta */}
+                {/* invisible zone to ease hovering over the label */}
                 <circle cx={lx} cy={ly} r={30} fill="transparent" />
                 <text
                   x={lx}
@@ -354,8 +354,8 @@ export function RadarChart({
           (() => {
             const ax = axes[hover];
             const [lx, ly] = polar(R + 20, hover);
-            // Tooltip hacia el interior del radar: queda dentro de la card y el
-            // fondo opaco lo hace legible sobre las series.
+            // Tooltip toward the inside of the radar: stays within the card and
+            // the opaque background keeps it legible over the series.
             const tx = lx < cx - 6 ? "0%" : lx > cx + 6 ? "-100%" : "-50%";
             const ty = ly < cy - 6 ? "0%" : ly > cy + 6 ? "-100%" : "-50%";
             return (
@@ -369,11 +369,11 @@ export function RadarChart({
               >
                 <RadarTooltip
                   title={ax.label}
-                  reason={AXIS_RAZON[ax.key]}
-                  rows={modalidades.map((m, mi) => ({
+                  reason={AXIS_REASON[ax.key]}
+                  rows={modalities.map((m, mi) => ({
                     key: m.key,
-                    name: m.nombre,
-                    value: valorEje(ax.key, m, fmt),
+                    name: m.name,
+                    value: axisValue(ax.key, m, fmt),
                     color: colors[mi],
                   }))}
                 />
@@ -382,10 +382,10 @@ export function RadarChart({
           })()}
       </div>
       <div className="mt-1 flex flex-wrap justify-center gap-x-5 gap-y-1">
-        {modalidades.map((m, mi) => (
+        {modalities.map((m, mi) => (
           <div key={m.key} className="flex items-center gap-2 text-sm text-muted">
             <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: colors[mi] }} />
-            {m.nombre}
+            {m.name}
           </div>
         ))}
       </div>

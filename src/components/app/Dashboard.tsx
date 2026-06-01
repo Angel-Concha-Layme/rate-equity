@@ -1,6 +1,6 @@
 "use client";
 
-import { getStrategy, type Resultado, type ScenarioInput } from "@/lib/calc";
+import { getStrategy, type Result, type ScenarioInput } from "@/lib/calc";
 import type { FxState } from "@/lib/useFxRate";
 import { EquivalenceBanner } from "@/components/app/dashboard/EquivalenceBanner";
 import { ModalityCard } from "@/components/app/dashboard/ModalityCard";
@@ -10,55 +10,55 @@ import { DetailTable } from "@/components/app/dashboard/DetailTable";
 import { MonthlyTable } from "@/components/app/dashboard/MonthlyTable";
 
 /**
- * Componente de la derecha: un único grid de 12 columnas donde cada tarjeta es
- * un panel independiente (basado en el `Card` común). Las alturas son naturales
- * y cada fila encaja según su contenido; no se fuerza coincidencia con la sidebar.
+ * Right-hand component: a single 12-column grid where each card is an
+ * independent panel (based on the shared `Card`). Heights are natural and each
+ * row fits its content; no forced match with the sidebar.
  */
 export function Dashboard({
-  tuyo,
-  equivalente,
+  yours,
+  equivalent,
   input,
   fx,
 }: {
-  tuyo: Resultado;
-  equivalente: Resultado;
+  yours: Result;
+  equivalent: Result;
   input: ScenarioInput;
   fx: FxState;
 }) {
-  const money = getStrategy(input.pais).money;
+  const money = getStrategy(input.country).money;
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
       <EquivalenceBanner
-        tuyo={tuyo}
-        equivalente={equivalente}
+        yours={yours}
+        equivalent={equivalent}
         input={input}
         fx={fx}
         className="lg:col-span-12"
       />
 
-      <ModalityCard res={tuyo} color="var(--c1)" etiqueta="Tú" active money={money} className="lg:col-span-4" />
-      <WaterfallPanel res={tuyo} money={money} className="lg:col-span-8" />
+      <ModalityCard res={yours} color="var(--c1)" label="Tú" active money={money} className="lg:col-span-4" />
+      <WaterfallPanel res={yours} money={money} className="lg:col-span-8" />
 
       <ModalityCard
-        res={equivalente}
+        res={equivalent}
         color="var(--c2)"
-        etiqueta="Equivalente"
+        label="Equivalente"
         active={false}
         money={money}
         className="lg:col-span-4"
       />
-      <WaterfallPanel res={equivalente} money={money} className="lg:col-span-8" />
+      <WaterfallPanel res={equivalent} money={money} className="lg:col-span-8" />
 
-      <MonthlyTable tuyo={tuyo} equivalente={equivalente} pais={input.pais} className="lg:col-span-12" />
+      <MonthlyTable yours={yours} equivalent={equivalent} country={input.country} className="lg:col-span-12" />
 
-      {/* Radar (cuadrado, lado = alto de la tabla) + tabla que ocupa el resto */}
+      {/* Radar (square, side = table height) + table taking the rest */}
       <div className="flex flex-col gap-4 lg:col-span-12 lg:flex-row lg:items-stretch">
         <RadarPanel
-          modalidades={[tuyo, equivalente]}
+          modalities={[yours, equivalent]}
           money={money}
           className="lg:aspect-square lg:shrink-0"
         />
-        <DetailTable tuyo={tuyo} equivalente={equivalente} pais={input.pais} className="lg:min-w-0 lg:flex-1" />
+        <DetailTable yours={yours} equivalent={equivalent} country={input.country} className="lg:min-w-0 lg:flex-1" />
       </div>
     </div>
   );

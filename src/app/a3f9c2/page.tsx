@@ -12,15 +12,15 @@ import {
   AtomsShowcase,
 } from "@/components/lab/sections";
 import { textureStyle } from "@/components/lab/Texture";
-import { MODALIDADES, type ModalidadKey } from "@/lib/sample";
+import { MODALITIES, type ModalityKey } from "@/lib/sample";
 import type { ThemeKey } from "@/components/lab/theme";
 
 export default function LabPage() {
   const [theme, setTheme] = useState<ThemeKey>("ledger");
-  const [modalidad, setModalidad] = useState<ModalidadKey>("contractor");
-  const [horas, setHoras] = useState(40);
+  const [modality, setModality] = useState<ModalityKey>("contractor");
+  const [hours, setHours] = useState(40);
 
-  const selected = MODALIDADES.find((m) => m.key === modalidad)!;
+  const selected = MODALITIES.find((m) => m.key === modality)!;
 
   return (
     <div
@@ -33,14 +33,14 @@ export default function LabPage() {
 
       <main className="mx-auto max-w-6xl space-y-20 px-5 pb-28 pt-6 sm:space-y-24">
         <CalculatorPanel
-          modalidad={modalidad}
-          setModalidad={setModalidad}
-          horas={horas}
-          setHoras={setHoras}
+          modality={modality}
+          setModality={setModality}
+          hours={hours}
+          setHours={setHours}
         />
-        <ComparisonCards selected={modalidad} horas={horas} onSelect={setModalidad} theme={theme} />
-        <ChartsBlock selected={modalidad} />
-        <BreakdownTable horas={horas} />
+        <ComparisonCards selected={modality} hours={hours} onSelect={setModality} theme={theme} />
+        <ChartsBlock selected={modality} />
+        <BreakdownTable hours={hours} />
         <AtomsShowcase />
       </main>
 

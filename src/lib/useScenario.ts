@@ -10,8 +10,8 @@ interface StoreState {
   loaded: boolean;
 }
 
-// Snapshot estable para SSR/hidratación: el primer render (servidor y cliente)
-// usa los defaults; la carga desde cache ocurre al suscribirse, ya en cliente.
+// Stable snapshot for SSR/hydration: the first render (server and client) uses
+// the defaults; loading from cache happens on subscribe, already on the client.
 const SERVER_STATE: StoreState = { input: DEFAULT_SCENARIO, loaded: false };
 
 let state: StoreState = SERVER_STATE;
@@ -25,28 +25,28 @@ function persist(input: ScenarioInput) {
   try {
     localStorage.setItem(KEY, JSON.stringify(input));
   } catch {
-    /* sin acceso a cache */
+    /* no cache access */
   }
 }
 
-// Mapea valores legacy de `categoria` (claves peruanas) a los roles canónicos.
-const ROL_LEGACY: Record<string, ScenarioInput["categoria"]> = {
+// Maps legacy `category` values (Peruvian keys) to the canonical roles.
+const LEGACY_ROLE: Record<string, ScenarioInput["category"]> = {
   planilla: "formal",
   independiente: "informal",
 };
 
-function normalizar(input: ScenarioInput): ScenarioInput {
-  const legacy = ROL_LEGACY[input.categoria as string];
-  return legacy ? { ...input, categoria: legacy } : input;
+function normalize(input: ScenarioInput): ScenarioInput {
+  const legacy = LEGACY_ROLE[input.category as string];
+  return legacy ? { ...input, category: legacy } : input;
 }
 
 function hydrateFromCache() {
   let input = state.input;
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) input = normalizar({ ...input, ...(JSON.parse(raw) as Partial<ScenarioInput>) });
+    if (raw) input = normalize({ ...input, ...(JSON.parse(raw) as Partial<ScenarioInput>) });
   } catch {
-    /* cache no disponible o corrupta: usamos defaults */
+    /* cache unavailable or corrupt: use defaults */
   }
   state = { input, loaded: true };
   emit();
@@ -67,9 +67,9 @@ function subscribe(listener: () => void) {
 }
 
 /**
- * Estado del escenario con persistencia en cache del navegador (localStorage).
- * Se modela como store externo para hidratar sin mismatch y exponer `loaded`
- * como valor reactivo (no un ref) hacia los consumidores.
+ * Scenario state persisted in the browser cache (localStorage). Modeled as an
+ * external store to hydrate without mismatch and expose `loaded` as a reactive
+ * value (not a ref) to consumers.
  */
 export function useScenario() {
   const snap = useSyncExternalStore(

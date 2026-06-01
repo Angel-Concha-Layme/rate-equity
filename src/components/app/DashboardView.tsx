@@ -1,32 +1,32 @@
 "use client";
 
-import type { Resultado, ScenarioInput } from "@/lib/calc";
+import type { Result, ScenarioInput } from "@/lib/calc";
 import type { FxState } from "@/lib/useFxRate";
 import { Sidebar } from "@/components/app/Sidebar";
 import { Dashboard } from "@/components/app/Dashboard";
 
 /**
- * Vista principal: compone el panel lateral y el contenido del dashboard en un
- * grid de dos columnas. El track de contenido usa minmax(0,1fr) y min-w-0 para
- * que nada empuje el ancho del layout (sin desbordes horizontales).
+ * Main view: composes the side panel and the dashboard content in a two-column
+ * grid. The content track uses minmax(0,1fr) and min-w-0 so nothing pushes the
+ * layout width (no horizontal overflow).
  */
 export function DashboardView({
   input,
   patch,
   fx,
-  tuyo,
-  equivalente,
-  seguroSugerido,
-  onReabrirWizard,
+  yours,
+  equivalent,
+  suggestedInsurance,
+  onReopenWizard,
   onReset,
 }: {
   input: ScenarioInput;
   patch: (p: Partial<ScenarioInput>) => void;
   fx: FxState;
-  tuyo: Resultado;
-  equivalente: Resultado;
-  seguroSugerido: number;
-  onReabrirWizard: () => void;
+  yours: Result;
+  equivalent: Result;
+  suggestedInsurance: number;
+  onReopenWizard: () => void;
   onReset: () => void;
 }) {
   return (
@@ -35,12 +35,12 @@ export function DashboardView({
         input={input}
         patch={patch}
         fx={fx}
-        seguroSugerido={seguroSugerido}
-        onReabrirWizard={onReabrirWizard}
+        suggestedInsurance={suggestedInsurance}
+        onReopenWizard={onReopenWizard}
         onReset={onReset}
       />
       <div className="min-w-0 lg:py-5">
-        <Dashboard tuyo={tuyo} equivalente={equivalente} input={input} fx={fx} />
+        <Dashboard yours={yours} equivalent={equivalent} input={input} fx={fx} />
       </div>
     </div>
   );

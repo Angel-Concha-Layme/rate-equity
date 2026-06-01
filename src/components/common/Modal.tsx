@@ -69,9 +69,9 @@ export function Modal({
 
   if (!open || typeof document === "undefined") return null;
 
-  // Se renderiza en document.body (portal) para escapar de cualquier stacking
-  // context de los ancestros (p. ej. la sidebar sticky); así el modal queda
-  // siempre por encima del contenido sin depender de subir z-index.
+  // Rendered into document.body (portal) to escape any ancestor stacking
+  // context (e.g. the sticky sidebar); this keeps the modal always above the
+  // content without relying on bumping z-index.
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={onClose} />

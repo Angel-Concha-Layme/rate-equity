@@ -4,20 +4,20 @@ import { useState } from "react";
 import { Modal, Button } from "@/components/common";
 import { cn } from "@/lib/cn";
 
-const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
-const PRESETS: { label: string; horario: number[] }[] = [
-  { label: "L-V · 8h", horario: [8, 8, 8, 8, 8, 0, 0] },
-  { label: "L-V · 4h", horario: [4, 4, 4, 4, 4, 0, 0] },
-  { label: "L-S · 8h", horario: [8, 8, 8, 8, 8, 8, 0] },
-  { label: "L-V · 9h", horario: [9, 9, 9, 9, 9, 0, 0] },
+const PRESETS: { label: string; schedule: number[] }[] = [
+  { label: "L-V · 8h", schedule: [8, 8, 8, 8, 8, 0, 0] },
+  { label: "L-V · 4h", schedule: [4, 4, 4, 4, 4, 0, 0] },
+  { label: "L-S · 8h", schedule: [8, 8, 8, 8, 8, 8, 0] },
+  { label: "L-V · 9h", schedule: [9, 9, 9, 9, 9, 0, 0] },
 ];
 
-export function resumenHorario(h: number[]): string {
-  const sem = h.slice(0, 5);
-  const finde = h.slice(5);
-  if (sem.every((x) => x === sem[0]) && finde.every((x) => x === 0) && sem[0] > 0)
-    return `L-V · ${sem[0]}h/día`;
+export function scheduleSummary(h: number[]): string {
+  const week = h.slice(0, 5);
+  const weekend = h.slice(5);
+  if (week.every((x) => x === week[0]) && weekend.every((x) => x === 0) && week[0] > 0)
+    return `L-V · ${week[0]}h/día`;
   if (h.every((x) => x === h[0]) && h[0] > 0) return `todos los días · ${h[0]}h`;
   return "horario personalizado";
 }
@@ -46,20 +46,20 @@ function Stepper({ value, onChange }: { value: number; onChange: (v: number) => 
   );
 }
 
-export function HorarioField({
-  horario,
+export function ScheduleField({
+  schedule,
   onChange,
 }: {
-  horario: number[];
+  schedule: number[];
   onChange: (h: number[]) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState<number[]>(horario);
-  const total = horario.reduce((a, b) => a + b, 0);
+  const [draft, setDraft] = useState<number[]>(schedule);
+  const total = schedule.reduce((a, b) => a + b, 0);
   const draftTotal = draft.reduce((a, b) => a + b, 0);
 
   const openModal = () => {
-    setDraft(horario);
+    setDraft(schedule);
     setOpen(true);
   };
   const save = () => {
@@ -77,7 +77,7 @@ export function HorarioField({
       >
         <span className="text-[0.95rem]">
           <span className="font-mono font-semibold tabular-nums text-ink">{total} h</span>
-          <span className="text-muted"> / sem · {resumenHorario(horario)}</span>
+          <span className="text-muted"> / sem · {scheduleSummary(schedule)}</span>
         </span>
         <svg
           aria-hidden
@@ -97,12 +97,12 @@ export function HorarioField({
         </p>
         <div className="mb-5 flex flex-wrap gap-2">
           {PRESETS.map((p) => {
-            const activo = p.horario.every((x, i) => x === draft[i]);
+            const activo = p.schedule.every((x, i) => x === draft[i]);
             return (
               <button
                 key={p.label}
                 type="button"
-                onClick={() => setDraft([...p.horario])}
+                onClick={() => setDraft([...p.schedule])}
                 className={cn(
                   "rounded-pill border px-3 py-1.5 text-xs font-semibold transition",
                   activo
@@ -116,7 +116,7 @@ export function HorarioField({
           })}
         </div>
         <div className="space-y-1.5">
-          {DIAS.map((d, i) => (
+          {DAYS.map((d, i) => (
             <div
               key={d}
               className={cn(

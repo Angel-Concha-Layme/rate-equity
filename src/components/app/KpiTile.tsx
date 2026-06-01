@@ -8,8 +8,8 @@ export interface KpiDelta {
 }
 
 /**
- * KPI comparativo: valor de "tú" (protagonista) + valor de la otra modalidad +
- * el delta entre ambos. Todas las tarjetas comparten el mismo estilo neutro.
+ * Comparative KPI: "your" value (the focus) + the other modality's value + the
+ * delta between them. All tiles share the same neutral style.
  */
 export function KpiTile({
   label,

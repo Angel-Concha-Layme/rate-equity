@@ -7,7 +7,7 @@ interface Option<T extends string> {
   value: T;
   label: string;
   disabled?: boolean;
-  hint?: string; // tooltip explicativo cuando la opción está deshabilitada
+  hint?: string; // explanatory tooltip shown when the option is disabled
 }
 
 export function SegmentedControl<T extends string>({

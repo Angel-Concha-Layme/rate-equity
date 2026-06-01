@@ -1,131 +1,131 @@
 /**
- * Contrato del patrón Strategy multi-país. El core (`computeScenario`) delega
- * todo lo país-específico (modelado tributario, calendario/feriados, etiquetas
- * y copy) en una `CountryStrategy` resuelta desde el registro por código ISO.
+ * Multi-country Strategy contract. The core (`computeScenario`) delegates
+ * everything country-specific (tax modeling, calendar/holidays, labels and
+ * copy) to a `CountryStrategy` resolved from the registry by ISO code.
  *
- * Las modalidades se modelan con roles genéricos: `formal` (relación de
- * dependencia, con beneficios) e `informal` (por cuenta propia, más líquido).
- * Cada país aporta las etiquetas y la prosa con las que se muestran esos roles.
+ * Modalities are modeled with generic roles: `formal` (dependent employment,
+ * with benefits) and `informal` (self-employed, more take-home cash). Each
+ * country provides the labels and prose used to present those roles.
  */
-import type { Modalidad, ModalidadKey, MoneyFn } from "@/lib/sample";
-import type { Moneda } from "@/lib/currency";
-import type { TiempoTrabajo } from "@/lib/calendar";
+import type { Modality, ModalityKey, MoneyFn } from "@/lib/sample";
+import type { CurrencyCode } from "@/lib/currency";
+import type { WorkTime } from "@/lib/calendar";
 
-/** Roles canónicos comparables (independientes del país). */
-export type Rol = "formal" | "informal";
+/** Canonical comparable roles (country-independent). */
+export type Role = "formal" | "informal";
 
-/** Países con estrategia disponible. Se amplía al sumar jurisdicciones. */
-export type Pais = "pe";
+/** Countries with an available strategy. Extended as jurisdictions are added. */
+export type Country = "pe";
 
-/** Detalle de un mes (para la tabla mes a mes). */
-export interface MesResultado {
-  mes: number; // 1-12
-  dias: number; // días laborables del mes
-  horas: number; // horas laborables del mes
-  bruto: number; // ingreso bruto del mes
-  descuento: number; // retención/aportes del mes según rol
-  liquido: number; // efectivo recibido en el mes
+/** Detail of a month (for the month-by-month table). */
+export interface MonthResult {
+  month: number; // 1-12
+  days: number; // working days of the month
+  hours: number; // working hours of the month
+  gross: number; // gross income of the month
+  deduction: number; // withholding/contributions of the month by role
+  net: number; // cash received in the month
 }
 
-/** Resultado completo de modelar una modalidad para un ingreso anual dado. */
-export interface Resultado extends Modalidad {
-  rol: Rol;
-  promedioMensual: number; // valor total / 12
-  valorHora: number;
-  devolucion: number; // devolución anual de impuestos (0 si no aplica)
-  meses: MesResultado[];
-  anual: {
-    ingresoTotal: number;
-    impuesto: number;
+/** Full result of modeling a modality for a given annual income. */
+export interface Result extends Modality {
+  role: Role;
+  monthlyAverage: number; // total value / 12
+  hourlyValue: number;
+  refund: number; // annual tax refund (0 if not applicable)
+  months: MonthResult[];
+  annual: {
+    totalIncome: number;
+    tax: number;
     pension: number;
-    salud: number;
-    beneficios: number;
-    liquidez: number;
-    valorTotal: number;
-    costoEmpresa: number;
+    health: number;
+    benefits: number;
+    liquidity: number;
+    totalValue: number;
+    employerCost: number;
   };
 }
 
-/** Metadatos y copy de una modalidad dentro de un país. */
-export interface ModalidadMeta {
-  rol: Rol;
-  key: ModalidadKey; // identidad estable (React keys / compatibilidad)
-  nombre: string; // "Planilla"
+/** Metadata and copy of a modality within a country. */
+export interface ModalityMeta {
+  role: Role;
+  key: ModalityKey; // stable identity (React keys / compatibility)
+  name: string; // "Planilla"
   tagline: string; // "5ta categoría · dependiente"
   badge: string; // "Beneficios + estabilidad"
   selectorLabel: string; // "Planilla (5ta)"
-  // fragmentos de prosa para el banner de equivalencia
-  comoFrase: string; // inicio de oración: "En planilla"
-  sujetoFrase: string; // sujeto: "alguien en planilla"
-  razonPromedio: string; // por qué el promedio supera al mes típico
-  valorDiferido: string; // de dónde sale el valor que no se ve como efectivo
-  // copy del wizard
+  // prose fragments for the equivalence banner
+  asPhrase: string; // sentence opener: "En planilla"
+  subjectPhrase: string; // subject: "alguien en planilla"
+  averageReason: string; // why the average beats the typical month
+  deferredValue: string; // where the value not seen as cash comes from
+  // wizard copy
   wizard: { sub: string; desc: string; info: string };
 }
 
-/** Formateadores que se inyectan a las filas de detalle. */
-export interface Formatos {
+/** Formatters injected into the detail rows. */
+export interface Formats {
   money: MoneyFn;
   pct: (n: number, decimals?: number) => string;
 }
 
-/** Fila de la tabla de detalle anual (labels y acceso a datos por país). */
-export interface DetalleFila {
+/** Row of the annual detail table (labels and per-country data access). */
+export interface DetailRow {
   label: string;
-  get: (x: Resultado, fmt: Formatos) => string;
+  get: (x: Result, fmt: Formats) => string;
   emphasis?: boolean;
   tone?: "loss" | "profit";
   sub?: boolean;
 }
 
-/** Identidad y formato del país. */
-export interface PaisMeta {
-  code: Pais;
+/** Country identity and formatting. */
+export interface CountryMeta {
+  code: Country;
   label: string;
   flag: string;
-  currency: Moneda;
+  currency: CurrencyCode;
   locale: string;
   disabled?: boolean;
 }
 
-/** Textos país-específicos compartidos por la UI. */
-export interface CopyPais {
-  situacionInfo: string; // ayuda del selector de situación (sidebar)
-  feriadosInfo: string; // ayuda del toggle de feriados
-  seguroInfo: string; // ayuda del toggle de seguro privado
-  landingTagline: string; // subtítulo del landing
-  wizardPaisNota: string; // nota del paso de país en el wizard
+/** Country-specific texts shared by the UI. */
+export interface CountryCopy {
+  situationInfo: string; // help for the situation selector (sidebar)
+  holidaysInfo: string; // help for the holidays toggle
+  insuranceInfo: string; // help for the private insurance toggle
+  landingTagline: string; // landing subtitle
+  wizardCountryNote: string; // note for the country step in the wizard
 }
 
-/** Argumentos para modelar una modalidad. */
-export interface ModelarArgs {
-  rol: Rol;
-  ingresoAnual: number;
-  fraccionMensual: number[];
-  tiempo: TiempoTrabajo;
+/** Arguments to model a modality. */
+export interface ModelArgs {
+  role: Role;
+  annualIncome: number;
+  monthlyFraction: number[];
+  time: WorkTime;
   year: number;
-  seguroAnual?: number;
+  annualInsurance?: number;
 }
 
-/** Estrategia de un país: modela el cálculo y aporta etiquetas/copy/feriados. */
+/** A country's strategy: models the calculation and provides labels/copy/holidays. */
 export interface CountryStrategy {
-  meta: PaisMeta;
-  defaultRol: Rol;
-  modalidades: Record<Rol, ModalidadMeta>;
-  /** Feriados nacionales del año: [mes (1-12), día]. */
-  feriados(year: number): [number, number][];
-  /** ¿El ingreso del rol depende de los días/horas trabajados? (feriados afectan). */
-  ingresoVariable(rol: Rol): boolean;
-  /** ¿El rol factura siempre en bruto? (el impuesto se regulariza después). */
-  facturaBruto(rol: Rol): boolean;
-  modelar(a: ModelarArgs): Resultado;
-  /** Filas de la tabla de detalle anual (labels país-específicos). */
-  detalleRows(): DetalleFila[];
-  /** Tramos de precio mensual del seguro privado de salud (moneda local). */
-  seguroTramos(): number[];
-  /** Tramo de seguro sugerido según la liquidez mensual. */
-  seguroSugerido(liquidezMensual: number): number;
-  /** Formateador de moneda local. */
+  meta: CountryMeta;
+  defaultRole: Role;
+  modalities: Record<Role, ModalityMeta>;
+  /** National holidays of the year: [month (1-12), day]. */
+  holidays(year: number): [number, number][];
+  /** Does the role's income depend on days/hours worked? (holidays affect it). */
+  variableIncome(role: Role): boolean;
+  /** Does the role always bill gross? (tax is settled later). */
+  billsGross(role: Role): boolean;
+  model(a: ModelArgs): Result;
+  /** Rows of the annual detail table (country-specific labels). */
+  detailRows(): DetailRow[];
+  /** Monthly price tiers of private health insurance (local currency). */
+  insuranceTiers(): number[];
+  /** Suggested insurance tier based on monthly liquidity. */
+  suggestedInsurance(monthlyLiquidity: number): number;
+  /** Local currency formatter. */
   money: MoneyFn;
-  copy: CopyPais;
+  copy: CountryCopy;
 }

@@ -3,66 +3,66 @@
 import { useMemo, useState } from "react";
 import { useScenario } from "@/lib/useScenario";
 import { useFxRate } from "@/lib/useFxRate";
-import { computeScenario, seguroPrivadoSugerido } from "@/lib/calc";
+import { computeScenario, suggestedPrivateInsurance } from "@/lib/calc";
 import { LandingHero } from "@/components/app/LandingHero";
 import { Wizard } from "@/components/app/Wizard";
 import { DashboardView } from "@/components/app/DashboardView";
 
-type Fase = "landing" | "wizard" | "dashboard";
+type Phase = "landing" | "wizard" | "dashboard";
 
 export function AppShell() {
   const { input, patch, reset, loaded } = useScenario();
-  // `null` = sin navegación manual: la fase se deriva del estado cargado, de modo
-  // que los usuarios recurrentes (wizardDone en cache) aterrizan en el dashboard.
-  const [faseManual, setFaseManual] = useState<Fase | null>(null);
-  const [paso, setPaso] = useState(0);
+  // `null` = no manual navigation: the phase is derived from the loaded state,
+  // so returning users (wizardDone in cache) land on the dashboard.
+  const [manualPhase, setManualPhase] = useState<Phase | null>(null);
+  const [step, setStep] = useState(0);
 
-  const fx = useFxRate(input.monedaCobro);
+  const fx = useFxRate(input.billingCurrency);
 
-  const fase: Fase = faseManual ?? (loaded && input.wizardDone ? "dashboard" : "landing");
-  const setFase = setFaseManual;
+  const phase: Phase = manualPhase ?? (loaded && input.wizardDone ? "dashboard" : "landing");
+  const setPhase = setManualPhase;
 
-  // conversión a moneda local (PEN) ANTES del motor; computeScenario sigue puro.
+  // Conversion to local currency (PEN) BEFORE the engine; computeScenario stays pure.
   const inputPEN = useMemo(
-    () => ({ ...input, monto: Math.round(input.monto * fx.rate) }),
+    () => ({ ...input, amount: Math.round(input.amount * fx.rate) }),
     [input, fx.rate],
   );
-  const { tuyo, equivalente } = useMemo(() => computeScenario(inputPEN), [inputPEN]);
+  const { yours, equivalent } = useMemo(() => computeScenario(inputPEN), [inputPEN]);
 
-  // Tramo de seguro sugerido según la liquidez SIN seguro (en soles). Estable
-  // frente al estado del toggle; se usa para autollenar el monto al activarlo.
-  const seguroSugerido = useMemo(() => {
-    if (inputPEN.categoria !== "informal") return 0;
-    const base = computeScenario({ ...inputPEN, seguroPrivado: false }).tuyo.liquido;
-    return seguroPrivadoSugerido(inputPEN.pais, base);
+  // Suggested insurance tier based on liquidity WITHOUT insurance (in soles).
+  // Stable against the toggle state; used to autofill the amount when enabling it.
+  const suggestedInsurance = useMemo(() => {
+    if (inputPEN.category !== "informal") return 0;
+    const base = computeScenario({ ...inputPEN, privateInsurance: false }).yours.net;
+    return suggestedPrivateInsurance(inputPEN.country, base);
   }, [inputPEN]);
 
-  if (fase === "landing") {
+  if (phase === "landing") {
     return (
       <LandingHero
         onStart={() => {
-          patch({ modo: "bruto" });
-          setPaso(0);
-          setFase("wizard");
+          patch({ mode: "gross" });
+          setStep(0);
+          setPhase("wizard");
         }}
-        onExample={() => setFase("dashboard")}
+        onExample={() => setPhase("dashboard")}
       />
     );
   }
 
-  if (fase === "wizard") {
+  if (phase === "wizard") {
     return (
       <Wizard
         input={input}
         patch={patch}
-        paso={paso}
-        setPaso={setPaso}
+        step={step}
+        setStep={setStep}
         fx={fx}
         onDone={() => {
           patch({ wizardDone: true });
-          setFase("dashboard");
+          setPhase("dashboard");
         }}
-        onCancel={() => setFase("landing")}
+        onCancel={() => setPhase("landing")}
       />
     );
   }
@@ -72,17 +72,17 @@ export function AppShell() {
       input={input}
       patch={patch}
       fx={fx}
-      tuyo={tuyo}
-      equivalente={equivalente}
-      seguroSugerido={seguroSugerido}
-      onReabrirWizard={() => {
-        setPaso(0);
-        setFase("wizard");
+      yours={yours}
+      equivalent={equivalent}
+      suggestedInsurance={suggestedInsurance}
+      onReopenWizard={() => {
+        setStep(0);
+        setPhase("wizard");
       }}
       onReset={() => {
         reset();
-        setPaso(0);
-        setFase("landing");
+        setStep(0);
+        setPhase("landing");
       }}
     />
   );

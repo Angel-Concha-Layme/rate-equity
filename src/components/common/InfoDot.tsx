@@ -2,7 +2,7 @@
 
 import { Tooltip } from "./Tooltip";
 
-/** Disparador "i" para Tooltip. */
+/** "i" trigger for Tooltip. */
 export function InfoDot({ content }: { content: string }) {
   return (
     <Tooltip content={content}>

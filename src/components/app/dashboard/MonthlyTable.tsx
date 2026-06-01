@@ -1,43 +1,43 @@
 import { Card } from "@/components/common";
-import { getStrategy, type Resultado } from "@/lib/calc";
+import { getStrategy, type Result } from "@/lib/calc";
 import { PanelHeader } from "@/components/app/dashboard/PanelHeader";
 import { cn } from "@/lib/cn";
 
-const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
 /**
- * Salario mes a mes comparado (rol informal vs formal). El líquido del rol
- * informal varía con los días/horas laborables de cada mes (y su retención);
- * el del formal es estable, con extras en los meses de gratificación.
+ * Month-by-month salary comparison (informal vs formal role). The informal
+ * role's net varies with each month's working days/hours (and its withholding);
+ * the formal one is stable, with extras in the bonus months.
  */
 export function MonthlyTable({
-  tuyo,
-  equivalente,
-  pais,
+  yours,
+  equivalent,
+  country,
   className,
 }: {
-  tuyo: Resultado;
-  equivalente: Resultado;
-  pais: string;
+  yours: Result;
+  equivalent: Result;
+  country: string;
   className?: string;
 }) {
-  const strat = getStrategy(pais);
-  const money = strat.money;
-  const pair = [tuyo, equivalente];
-  const indep = pair.find((r) => r.rol === "informal");
-  const plan = pair.find((r) => r.rol === "formal");
-  if (!indep || !plan) return null;
+  const strategy = getStrategy(country);
+  const money = strategy.money;
+  const pair = [yours, equivalent];
+  const informal = pair.find((r) => r.role === "informal");
+  const formal = pair.find((r) => r.role === "formal");
+  if (!informal || !formal) return null;
 
   const year = new Date().getFullYear();
-  const totalDias = indep.meses.reduce((a, m) => a + m.dias, 0);
-  const totalHoras = indep.meses.reduce((a, m) => a + m.horas, 0);
-  const totalIndep = indep.meses.reduce((a, m) => a + m.liquido, 0);
-  const totalPlan = plan.meses.reduce((a, m) => a + m.liquido, 0);
+  const totalDays = informal.months.reduce((a, m) => a + m.days, 0);
+  const totalHours = informal.months.reduce((a, m) => a + m.hours, 0);
+  const totalInformal = informal.months.reduce((a, m) => a + m.net, 0);
+  const totalFormal = formal.months.reduce((a, m) => a + m.net, 0);
 
   return (
     <Card className={cn("overflow-hidden", className)}>
       <div className="px-5 pt-5">
-        <PanelHeader titulo={`Salario mes a mes · ${year}`} tipo="Líquido" />
+        <PanelHeader title={`Salario mes a mes · ${year}`} type="Líquido" />
       </div>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
@@ -49,26 +49,26 @@ export function MonthlyTable({
               <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider">
                 <span className="inline-flex items-center gap-2 text-ink">
                   <span className="inline-block size-2 rounded-full" style={{ background: "var(--c2)" }} />
-                  {strat.modalidades.informal.nombre}
+                  {strategy.modalities.informal.name}
                 </span>
               </th>
               <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider">
                 <span className="inline-flex items-center gap-2 text-ink">
                   <span className="inline-block size-2 rounded-full" style={{ background: "var(--c1)" }} />
-                  {strat.modalidades.formal.nombre}
+                  {strategy.modalities.formal.name}
                 </span>
               </th>
             </tr>
           </thead>
           <tbody>
-            {indep.meses.map((m, i) => (
-              <tr key={m.mes} className="border-b border-line last:border-0">
-                <td className="px-5 py-2.5 text-sm text-muted">{MESES[m.mes - 1]}</td>
-                <td className="px-5 py-2.5 text-right font-mono text-sm tabular-nums text-subtle">{m.dias}</td>
-                <td className="px-5 py-2.5 text-right font-mono text-sm tabular-nums text-subtle">{m.horas}</td>
-                <td className="px-5 py-2.5 text-right font-mono text-sm tabular-nums text-ink">{money(m.liquido)}</td>
+            {informal.months.map((m, i) => (
+              <tr key={m.month} className="border-b border-line last:border-0">
+                <td className="px-5 py-2.5 text-sm text-muted">{MONTHS[m.month - 1]}</td>
+                <td className="px-5 py-2.5 text-right font-mono text-sm tabular-nums text-subtle">{m.days}</td>
+                <td className="px-5 py-2.5 text-right font-mono text-sm tabular-nums text-subtle">{m.hours}</td>
+                <td className="px-5 py-2.5 text-right font-mono text-sm tabular-nums text-ink">{money(m.net)}</td>
                 <td className="px-5 py-2.5 text-right font-mono text-sm tabular-nums text-ink">
-                  {money(plan.meses[i].liquido)}
+                  {money(formal.months[i].net)}
                 </td>
               </tr>
             ))}
@@ -76,10 +76,10 @@ export function MonthlyTable({
           <tfoot>
             <tr className="border-t border-line-strong bg-canvas-2">
               <td className="px-5 py-3 text-sm font-semibold text-ink">Total año</td>
-              <td className="px-5 py-3 text-right font-mono text-sm font-semibold tabular-nums text-ink">{totalDias}</td>
-              <td className="px-5 py-3 text-right font-mono text-sm font-semibold tabular-nums text-ink">{totalHoras}</td>
-              <td className="px-5 py-3 text-right font-mono text-sm font-bold tabular-nums text-ink">{money(totalIndep)}</td>
-              <td className="px-5 py-3 text-right font-mono text-sm font-bold tabular-nums text-ink">{money(totalPlan)}</td>
+              <td className="px-5 py-3 text-right font-mono text-sm font-semibold tabular-nums text-ink">{totalDays}</td>
+              <td className="px-5 py-3 text-right font-mono text-sm font-semibold tabular-nums text-ink">{totalHours}</td>
+              <td className="px-5 py-3 text-right font-mono text-sm font-bold tabular-nums text-ink">{money(totalInformal)}</td>
+              <td className="px-5 py-3 text-right font-mono text-sm font-bold tabular-nums text-ink">{money(totalFormal)}</td>
             </tr>
           </tfoot>
         </table>

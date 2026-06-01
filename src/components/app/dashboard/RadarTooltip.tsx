@@ -2,18 +2,18 @@ import { Fragment } from "react";
 
 export type RadarTooltipRow = {
   key: string;
-  /** Nombre de la modalidad (columna izquierda). */
+  /** Modality name (left column). */
   name: string;
-  /** Valor ya formateado (columna derecha, alineado en columna). */
+  /** Already-formatted value (right column, aligned in a column). */
   value: string;
-  /** Color del punto y del valor. */
+  /** Color of the dot and the value. */
   color: string;
 };
 
 /**
- * Tooltip del radar. Usa un grid de dos columnas para que los nombres queden
- * a la izquierda y las cantidades alineadas en una misma columna, sin depender
- * del ancho de cada etiqueta. El padding horizontal deja aire a ambos lados.
+ * Radar tooltip. Uses a two-column grid so the names stay on the left and the
+ * amounts align in a single column, regardless of each label's width. The
+ * horizontal padding leaves air on both sides.
  */
 export function RadarTooltip({
   title,
