@@ -147,17 +147,16 @@ export function modelFormal(
 
 /**
  * Informal/independiente (4th) from the annual income and the monthly fraction.
- * `annualInsurance` is the annual cost of private insurance (in soles). It is a
- * personal cost: it reduces the worker's liquidity (and therefore the total
- * value) and is NOT counted as a health benefit. The only benefit here is the
- * year-end income-tax refund, when it applies.
+ * Health is not modeled here: unlike payroll (EsSalud), the independent worker
+ * pays for it out of pocket, which is treated as a regular monthly expense via
+ * the general expenses feature, not as part of the labor-income model. The only
+ * benefit here is the year-end income-tax refund, when it applies.
  */
 export function modelInformal(
   annualIncome: number,
   monthlyFraction: number[],
   time: WorkTime,
   uit: number,
-  annualInsurance = 0,
 ): Result {
   const meta = MODALITIES_PE.informal;
   const totalIncome = annualIncome;
@@ -165,20 +164,18 @@ export function modelInformal(
   const taxableBase = totalIncome - deduction;
   const tax = laborIncomeTax(taxableBase, uit); // FINAL tax (annual)
 
-  // monthly detail: gross, 8% withholding (if above threshold) and the monthly insurance
-  const monthlyInsurance = annualInsurance / 12;
+  // monthly detail: gross and the 8% withholding (if above threshold)
   let annualWithholding = 0;
   const months: MonthResult[] = time.months.map((m, i) => {
     const gross = totalIncome * monthlyFraction[i];
     const withholding = gross > WITHHOLDING_4TH_THRESHOLD ? WITHHOLDING_4TH * gross : 0;
     annualWithholding += withholding;
-    const deductionMonth = withholding + monthlyInsurance; // withholding + private insurance
-    return { month: m.month, days: m.days, hours: m.hours, gross: round(gross), deduction: round(deductionMonth), net: round(gross - deductionMonth) };
+    return { month: m.month, days: m.days, hours: m.hours, gross: round(gross), deduction: round(withholding), net: round(gross - withholding) };
   });
 
   const refund = Math.max(0, annualWithholding - tax); // settled in the annual return
-  const health = 0; // private insurance is a personal cost, not a valued benefit
-  const annualLiquidity = totalIncome - annualWithholding - annualInsurance; // cash after insurance
+  const health = 0; // health is self-funded and tracked as a regular expense
+  const annualLiquidity = totalIncome - annualWithholding; // cash after withholding
   const totalValue = annualLiquidity + refund; // net liquidity + the only benefit (refund)
   const employerCost = totalIncome; // the company only pays the fee
 
@@ -190,9 +187,6 @@ export function modelInformal(
   const breakdown: BreakdownStep[] = [
     { label: "Bruto", amount: round(monthlyGross), kind: "start" },
     { label: "Retención 8%", amount: -round(monthlyWithholding), kind: "dec" },
-    ...(annualInsurance > 0
-      ? [{ label: "Seguro privado", amount: -round(monthlyInsurance), kind: "dec" as const }]
-      : []),
     { label: "Líquido", amount: round(monthlyNet), kind: "subtotal" },
     ...(refund > 0
       ? [{ label: "Devolución IR", amount: round(refund / 12), kind: "inc" as const }]

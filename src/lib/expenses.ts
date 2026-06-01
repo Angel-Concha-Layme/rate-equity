@@ -22,6 +22,7 @@ export interface Expense {
 /** Opinionated default categories shown in the editor (amount left at 0). */
 export const EXPENSE_SUGGESTIONS: { id: string; label: string }[] = [
   { id: "rent", label: "Alquiler" },
+  { id: "health", label: "Seguro de salud" },
   { id: "food", label: "Alimentación" },
   { id: "transport", label: "Transporte" },
   { id: "utilities", label: "Servicios (luz, agua, internet)" },
@@ -32,6 +33,21 @@ export const EXPENSE_SUGGESTIONS: { id: string; label: string }[] = [
 /** Default expense list: the suggestions with no amount set. */
 export function defaultExpenses(): Expense[] {
   return EXPENSE_SUGGESTIONS.map((s) => ({ ...s, amount: 0 }));
+}
+
+/**
+ * Reconciles a (possibly cached) expense list with the current suggestions.
+ * Ensures every suggested category is present — so newly added suggestions show
+ * up for users with persisted state — while preserving any amounts they already
+ * entered and keeping their custom rows. Suggested rows follow the canonical
+ * suggestion order; custom/unknown rows are appended afterwards.
+ */
+export function reconcileExpenses(expenses: Expense[]): Expense[] {
+  const byId = new Map(expenses.map((e) => [e.id, e]));
+  const suggested = EXPENSE_SUGGESTIONS.map((s) => byId.get(s.id) ?? { ...s, amount: 0 });
+  const suggestedIds = new Set(EXPENSE_SUGGESTIONS.map((s) => s.id));
+  const extras = expenses.filter((e) => !suggestedIds.has(e.id));
+  return [...suggested, ...extras];
 }
 
 /** Only expenses with a positive amount are counted. */

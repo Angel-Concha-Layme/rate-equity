@@ -2,6 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import { DEFAULT_SCENARIO, type ScenarioInput } from "./calc";
+import { defaultExpenses, reconcileExpenses } from "./expenses";
 
 const KEY = "rate-equity:scenario";
 
@@ -36,8 +37,10 @@ const LEGACY_ROLE: Record<string, ScenarioInput["category"]> = {
 };
 
 function normalize(input: ScenarioInput): ScenarioInput {
-  const legacy = LEGACY_ROLE[input.category as string];
-  return legacy ? { ...input, category: legacy } : input;
+  const base = LEGACY_ROLE[input.category as string]
+    ? { ...input, category: LEGACY_ROLE[input.category as string] }
+    : input;
+  return { ...base, expenses: reconcileExpenses(base.expenses ?? defaultExpenses()) };
 }
 
 function hydrateFromCache() {

@@ -39,14 +39,12 @@ export function Sidebar({
   input,
   patch,
   fx,
-  suggestedInsurance,
   onReopenWizard,
   onReset,
 }: {
   input: ScenarioInput;
   patch: (p: Partial<ScenarioInput>) => void;
   fx: FxState;
-  suggestedInsurance: number;
   onReopenWizard: () => void;
   onReset: () => void;
 }) {
@@ -201,38 +199,6 @@ export function Sidebar({
                   label="Descontar feriados"
                 />
               </label>
-            </Ctrl>
-          )}
-
-          {isInformal && (
-            <Ctrl label="Seguro privado" info={strategy.copy.insuranceInfo}>
-              <label className="flex cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5">
-                <span className="text-[0.95rem] text-muted">Pago seguro privado</span>
-                <Toggle
-                  checked={!!input.privateInsurance}
-                  onChange={(v) =>
-                    patch(
-                      v
-                        ? { privateInsurance: true, privateInsuranceAmount: suggestedInsurance || input.privateInsuranceAmount }
-                        : { privateInsurance: false },
-                    )
-                  }
-                  label="Pago seguro privado"
-                />
-              </label>
-              {input.privateInsurance && (
-                <div className="relative mt-2">
-                  <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">
-                    {localSymbol}
-                  </span>
-                  <MoneyInput
-                    className="pl-9"
-                    aria-label="Costo mensual del seguro privado"
-                    value={input.privateInsuranceAmount ?? 0}
-                    onChange={(privateInsuranceAmount) => patch({ privateInsuranceAmount })}
-                  />
-                </div>
-              )}
             </Ctrl>
           )}
 
