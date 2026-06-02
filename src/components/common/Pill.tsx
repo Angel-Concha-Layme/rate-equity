@@ -20,8 +20,7 @@ export function Pill({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-pill border",
-        "theme-ledger:uppercase theme-ledger:tracking-[0.08em] theme-ledger:font-mono theme-ledger:text-[0.66rem]",
+        "inline-flex items-center gap-1.5 rounded-pill border px-2.5 py-1 font-mono text-[0.66rem] font-semibold uppercase tracking-[0.06em]",
         pillTones[tone],
         className,
       )}

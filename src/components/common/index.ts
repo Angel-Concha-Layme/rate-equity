@@ -10,6 +10,7 @@ export { MoneyInput } from "./MoneyInput";
 export { Field } from "./Field";
 export { SegmentedControl } from "./SegmentedControl";
 export { Toggle } from "./Toggle";
+export { ThemeToggle } from "./ThemeToggle";
 export { Tooltip } from "./Tooltip";
 export { InfoDot } from "./InfoDot";
 export { Divider } from "./Divider";

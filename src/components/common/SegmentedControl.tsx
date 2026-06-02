@@ -41,7 +41,7 @@ export function SegmentedControl<T extends string>({
               opt.disabled
                 ? "cursor-not-allowed text-subtle"
                 : active
-                  ? "bg-surface text-ink shadow-card"
+                  ? "bg-surface text-ink shadow-card theme-dark:bg-accent theme-dark:text-on-accent"
                   : "text-muted hover:text-ink",
             )}
           >

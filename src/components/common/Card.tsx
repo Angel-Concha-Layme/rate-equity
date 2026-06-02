@@ -10,9 +10,11 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-surface border border-line rounded-card shadow-card",
-        // Ledger theme: accounting-style top rule (rounded corners like "Clarity")
-        ruled && "theme-ledger:border-t-2 theme-ledger:border-t-ink",
+        "rounded-card border border-line bg-surface transition duration-300 hover:border-accent/40",
+        // Sombra verde (--primary) solo en hover (claro); en oscuro se conserva la previa.
+        "theme-light:hover:shadow-[0_0_22px_color-mix(in_oklab,var(--primary)_40%,transparent)]",
+        "theme-dark:shadow-[0_0_16px_var(--line)] theme-dark:hover:shadow-[0_0_22px_color-mix(in_oklab,var(--accent)_40%,transparent)]",
+        ruled && "border-t-2 border-t-line-strong",
         className,
       )}
       {...props}

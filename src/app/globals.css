@@ -1,13 +1,12 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ *
- * Variantes de tema (utility-first): permiten overrides por tema en el
- * markup, p. ej. `font-display theme-terminal:font-mono`.
+ * Variantes de tema (utility-first): permiten overrides por modo en el
+ * markup, p. ej. `text-ink theme-dark:text-primary`.
  * Doc: tailwindcss.com/docs/adding-custom-styles#custom-variants
  * ------------------------------------------------------------------ */
-@custom-variant theme-ledger (&:where([data-theme^="ledger"] *));
-@custom-variant theme-terminal (&:where([data-theme="terminal"] *));
-@custom-variant theme-clarity (&:where([data-theme="clarity"] *));
+@custom-variant theme-light (&:where([data-theme="light"] *));
+@custom-variant theme-dark (&:where([data-theme="dark"] *));
 
 /* ------------------------------------------------------------------ *
  * Tokens de diseño -> utilidades Tailwind.
@@ -51,7 +50,7 @@
   --animate-fade-in: fade-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-out: fade-out 0.2s ease-in forwards;
 
-  /* v2 motion library (utility-first: referenced via animate-* in markup) */
+  /* librería de motion (utility-first: se referencia con animate-* en el markup) */
   --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-scale-in: scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-float: float 7s ease-in-out infinite;
@@ -182,158 +181,108 @@
 }
 
 /* ================================================================== *
- * VALORES POR TEMA (datos, no clases utilitarias)
+ * SISTEMA DE TEMAS · claro (Solvente) por defecto + oscuro (Foco).
+ * Reconciliados: misma estructura, mismos tokens y tipografía (Archivo
+ * + Inter + JetBrains Mono); difieren en paleta, profundidad y textura.
+ * Se alternan con el toggle del header (data-theme en <html>).
  * ================================================================== */
 
-/* A: El Libro Mayor · claro · editorial-financiero (default)
- * El bloque se comparte con "ledger-v2" (mismos colores/formas); V2 solo
- * sobrescribe las fuentes más abajo. */
+/* CLARO · Solvente — clínico, blanco + teal + azul (por defecto) */
 :root,
-[data-theme="ledger"],
-[data-theme="ledger-v2"] {
-  --canvas: #faf8f2;
-  --canvas-2: #f1ece0;
+[data-theme="light"] {
+  --canvas: #f4f8f8;
+  --canvas-2: #e4eeee;
   --surface: #ffffff;
-  --surface-2: #f7f4ec;
-  --ink: #1c1a14;
-  --muted: #6c6555;
-  --subtle: #9a917e;
-  --line: #e6e0d2;
-  --line-strong: #c8bda3;
-  --primary: #14233e;
-  --on-primary: #faf8f2;
-  --accent: #9a6a1c;
-  --on-accent: #ffffff;
-  --profit: #1a7a4b;
-  --loss: #b23420;
-  --warn: #b07a10;
-  --ring: #14233e;
-
-  --f-display: var(--f-fraunces), Georgia, serif;
-  --f-sans: var(--f-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --f-mono: var(--f-plex-mono), ui-monospace, monospace;
-
-  /* esquinas tomadas del tema "Claro" */
-  --radius: 20px;
-  --radius-input-v: 14px;
-  --radius-pill-v: 999px;
-
-  --sh-card: 0 1px 0 rgba(28, 26, 20, 0.03), 0 1px 2px rgba(28, 26, 20, 0.05);
-  --sh-pop: 0 18px 40px -18px rgba(28, 26, 20, 0.28);
-  --sh-glow: 0 0 #0000;
-
-  --c1: #14233e;
-  --c2: #9a6a1c;
-  --c3: #1a7a4b;
-  --c4: #7c6a4e;
-  --c5: #b23420;
-  --chart-grid: #ece6d8;
-  --chart-axis: #c8bda3;
-
-  --tex: repeating-linear-gradient(to bottom, transparent 0 31px, rgba(28, 26, 20, 0.035) 31px 32px),
-    radial-gradient(120% 80% at 100% 0%, rgba(154, 106, 28, 0.06), transparent 60%);
-}
-
-/* B: Terminal Nocturno · oscuro OLED · quant */
-[data-theme="terminal"] {
-  --canvas: #070a10;
-  --canvas-2: #0b0f17;
-  --surface: #0f1520;
-  --surface-2: #151c29;
-  --ink: #e8edf5;
-  --muted: #93a0b4;
-  --subtle: #5d6a7e;
-  --line: rgba(255, 255, 255, 0.07);
-  --line-strong: rgba(255, 255, 255, 0.16);
-  --primary: #2dd4bf;
-  --on-primary: #03130f;
-  --accent: #3b82f6;
-  --on-accent: #04122b;
-  --profit: #34d399;
-  --loss: #fb7185;
-  --warn: #fbbf24;
-  --ring: #2dd4bf;
-
-  --f-display: var(--f-hanken), ui-sans-serif, system-ui, sans-serif;
-  --f-sans: var(--f-hanken), ui-sans-serif, system-ui, sans-serif;
-  --f-mono: var(--f-jetbrains), ui-monospace, monospace;
-
-  --radius: 11px;
-  --radius-input-v: 9px;
-  --radius-pill-v: 999px;
-
-  --sh-card: inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 12px 34px -20px rgba(0, 0, 0, 0.85);
-  --sh-pop: 0 24px 60px -22px rgba(0, 0, 0, 0.9);
-  --sh-glow: 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent),
-    0 10px 30px -12px color-mix(in oklab, var(--primary) 55%, transparent);
-
-  --c1: #2dd4bf;
-  --c2: #3b82f6;
-  --c3: #a78bfa;
-  --c4: #34d399;
-  --c5: #fb7185;
-  --chart-grid: rgba(255, 255, 255, 0.07);
-  --chart-axis: rgba(255, 255, 255, 0.2);
-
-  --tex: radial-gradient(90% 60% at 80% -10%, rgba(45, 212, 191, 0.1), transparent 60%),
-    radial-gradient(70% 50% at 0% 0%, rgba(59, 130, 246, 0.09), transparent 55%),
-    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-  --tex-size: auto, auto, 44px 44px, 44px 44px;
-}
-
-/* C: Claro · claro · humano / cercano */
-[data-theme="clarity"] {
-  --canvas: #f1f6f2;
-  --canvas-2: #e3efe6;
-  --surface: #ffffff;
-  --surface-2: #f3f9f4;
-  --ink: #0e2e29;
-  --muted: #4e6a62;
-  --subtle: #8aa39b;
-  --line: #dceae1;
-  --line-strong: #bcd6c9;
+  --surface-2: #f0f6f6;
+  --ink: #102023;
+  --muted: #4c6164;
+  --subtle: #87a0a2;
+  --line: #dde9e9;
+  --line-strong: #bdd2d2;
   --primary: #0f766e;
   --on-primary: #ffffff;
-  --accent: #fb7138;
+  --accent: #0369a1;
   --on-accent: #ffffff;
-  --profit: #10b981;
-  --loss: #ef4444;
-  --warn: #f59e0b;
+  --profit: #047857;
+  --loss: #be123c;
+  --warn: #b45309;
   --ring: #0f766e;
 
-  --f-display: var(--f-bricolage), ui-sans-serif, system-ui, sans-serif;
-  --f-sans: var(--f-lexend), ui-sans-serif, system-ui, sans-serif;
-  --f-mono: var(--f-jetbrains), ui-monospace, monospace;
+  --f-display: var(--brand-display), ui-sans-serif, system-ui, sans-serif;
+  --f-sans: var(--brand-sans), ui-sans-serif, system-ui, sans-serif;
+  --f-mono: var(--brand-mono), ui-monospace, monospace;
 
-  --radius: 20px;
-  --radius-input-v: 14px;
+  --radius: 12px;
+  --radius-input-v: 8px;
   --radius-pill-v: 999px;
 
-  --sh-card: 0 1px 2px rgba(14, 46, 41, 0.04),
-    0 14px 30px -16px rgba(14, 46, 41, 0.2);
-  --sh-pop: 0 26px 60px -24px rgba(14, 46, 41, 0.3);
+  --sh-card: 0 1px 2px rgba(16, 32, 35, 0.05), 0 12px 26px -18px rgba(16, 32, 35, 0.2);
+  --sh-pop: 0 22px 48px -24px rgba(16, 32, 35, 0.28);
   --sh-glow: 0 0 #0000;
 
   --c1: #0f766e;
-  --c2: #10b981;
-  --c3: #fb7138;
-  --c4: #38bdf8;
-  --c5: #f43f5e;
-  --chart-grid: #e1efe7;
-  --chart-axis: #bcd6c9;
+  --c2: #0369a1;
+  --c3: #047857;
+  --c4: #5b8a8a;
+  --c5: #be123c;
+  --chart-grid: #e4eeee;
+  --chart-axis: #bdd2d2;
+  /* waterfall: inicio (neutro), líquido (acento) y total (cierre fuerte) */
+  --wf-start: #4c6164;
+  --wf-subtotal: #0369a1;
+  --wf-total: #14233e;
 
-  --tex: radial-gradient(60% 50% at 12% 0%, rgba(16, 185, 129, 0.13), transparent 55%),
-    radial-gradient(55% 45% at 95% 12%, rgba(251, 113, 56, 0.13), transparent 55%);
+  --tex: linear-gradient(rgba(15, 118, 110, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 118, 110, 0.045) 1px, transparent 1px);
+  --tex-size: 26px 26px, 26px 26px;
 }
 
-/* ------------------------------------------------------------------ *
- * El Libro Mayor V2: mismos colores y formas, tipografía del tema
- * "Claro" (Bricolage + Lexend + JetBrains). Solo sustituye familias.
- * ------------------------------------------------------------------ */
-[data-theme="ledger-v2"] {
-  --f-display: var(--f-bricolage), ui-sans-serif, system-ui, sans-serif;
-  --f-sans: var(--f-lexend), ui-sans-serif, system-ui, sans-serif;
-  --f-mono: var(--f-jetbrains), ui-monospace, monospace;
+/* OSCURO · Foco — spotlight, negro cálido + blanco + ámbar */
+[data-theme="dark"] {
+  --canvas: #08080a;
+  --canvas-2: #0d0d10;
+  --surface: #131316;
+  --surface-2: #1a1a1f;
+  --ink: #f0f0f2;
+  --muted: #9a9aa2;
+  --subtle: #5e5e66;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.18);
+  --primary: #fafafa;
+  --on-primary: #0a0a0c;
+  --accent: #ffb020;
+  --on-accent: #1a1200;
+  --profit: #4ade80;
+  --loss: #f87171;
+  --warn: #ffb020;
+  --ring: #ffb020;
+
+  --f-display: var(--brand-display), ui-sans-serif, system-ui, sans-serif;
+  --f-sans: var(--brand-sans), ui-sans-serif, system-ui, sans-serif;
+  --f-mono: var(--brand-mono), ui-monospace, monospace;
+
+  --radius: 12px;
+  --radius-input-v: 8px;
+  --radius-pill-v: 999px;
+
+  --sh-card: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 16px 40px -24px rgba(0, 0, 0, 0.85);
+  --sh-pop: 0 28px 64px -26px rgba(0, 0, 0, 0.9);
+  --sh-glow: 0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent),
+    0 0 26px -8px color-mix(in oklab, var(--accent) 50%, transparent);
+
+  --c1: #fafafa;
+  --c2: #ffb020;
+  --c3: #9a9aa2;
+  --c4: #60a5fa;
+  --c5: #f87171;
+  --chart-grid: rgba(255, 255, 255, 0.07);
+  --chart-axis: rgba(255, 255, 255, 0.2);
+  /* waterfall: inicio slate, líquido azul y total en ámbar (héroe), sin blanco */
+  --wf-start: #8b97ad;
+  --wf-subtotal: #5aa2ff;
+  --wf-total: #ffb020;
+
+  --tex: radial-gradient(60% 45% at 50% -10%, rgba(255, 255, 255, 0.08), transparent 60%),
+    radial-gradient(40% 35% at 50% -5%, rgba(255, 176, 32, 0.1), transparent 55%);
+  --tex-size: auto;
 }
