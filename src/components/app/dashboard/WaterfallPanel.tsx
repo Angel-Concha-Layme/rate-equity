@@ -1,5 +1,5 @@
 import { Card } from "@/components/common";
-import { WaterfallChart } from "@/components/lab/Charts";
+import { WaterfallChart } from "@/components/app/dashboard/Charts";
 import { PanelHeader } from "@/components/app/dashboard/PanelHeader";
 import type { Result } from "@/lib/calc";
 import type { MoneyFn } from "@/lib/sample";

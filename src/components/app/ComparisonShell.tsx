@@ -1,46 +1,41 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useScenario } from "@/lib/useScenario";
 import { useFxRate } from "@/lib/useFxRate";
 import { computeScenario } from "@/lib/calc";
-import { LandingHero } from "@/components/app/LandingHero";
 import { Wizard } from "@/components/app/Wizard";
 import { DashboardView } from "@/components/app/DashboardView";
 
-type Phase = "landing" | "wizard" | "dashboard";
+type Phase = "wizard" | "dashboard";
 
-export function AppShell() {
+/**
+ * /comparison: la calculadora. Gobierna el wizard de onboarding y el dashboard
+ * en vivo. Quien llega nuevo arranca en el wizard; `?ejemplo=1` (el CTA "ver un
+ * ejemplo") y quien ya completó el wizard abren el dashboard. Cancelar/reiniciar
+ * vuelve al home ("/").
+ */
+export function ComparisonShell() {
+  const router = useRouter();
+  const example = useSearchParams().get("ejemplo") === "1";
   const { input, patch, reset, loaded } = useScenario();
-  // `null` = no manual navigation: the phase is derived from the loaded state,
-  // so returning users (wizardDone in cache) land on the dashboard.
   const [manualPhase, setManualPhase] = useState<Phase | null>(null);
   const [step, setStep] = useState(0);
 
   const fx = useFxRate(input.billingCurrency);
 
-  const phase: Phase = manualPhase ?? (loaded && input.wizardDone ? "dashboard" : "landing");
-  const setPhase = setManualPhase;
-
-  // Conversion to local currency (PEN) BEFORE the engine; computeScenario stays pure.
+  // Conversión a moneda local (PEN) ANTES del motor; computeScenario es puro.
   const inputPEN = useMemo(
     () => ({ ...input, amount: Math.round(input.amount * fx.rate) }),
     [input, fx.rate],
   );
   const { yours, equivalent } = useMemo(() => computeScenario(inputPEN), [inputPEN]);
 
-  if (phase === "landing") {
-    return (
-      <LandingHero
-        onStart={() => {
-          patch({ mode: "gross" });
-          setStep(0);
-          setPhase("wizard");
-        }}
-        onExample={() => setPhase("dashboard")}
-      />
-    );
-  }
+  // Evita parpadeo de fase mientras el escenario hidrata desde el cache.
+  if (!loaded) return null;
+
+  const phase: Phase = manualPhase ?? (input.wizardDone || example ? "dashboard" : "wizard");
 
   if (phase === "wizard") {
     return (
@@ -52,9 +47,9 @@ export function AppShell() {
         fx={fx}
         onDone={() => {
           patch({ wizardDone: true });
-          setPhase("dashboard");
+          setManualPhase("dashboard");
         }}
-        onCancel={() => setPhase("landing")}
+        onCancel={() => router.push("/")}
       />
     );
   }
@@ -68,12 +63,11 @@ export function AppShell() {
       equivalent={equivalent}
       onReopenWizard={() => {
         setStep(0);
-        setPhase("wizard");
+        setManualPhase("wizard");
       }}
       onReset={() => {
         reset();
-        setStep(0);
-        setPhase("landing");
+        router.push("/");
       }}
     />
   );

@@ -1,7 +1,10 @@
 "use client";
 
-import { Button, Card, Eyebrow } from "@/components/common";
+import { useRouter } from "next/navigation";
+import { Button, Card, Eyebrow, ThemeToggle } from "@/components/common";
+import { Wordmark } from "@/components/common/Wordmark";
 import { getStrategy } from "@/lib/calc";
+import { useScenario } from "@/lib/useScenario";
 import { BRAND } from "@/lib/brand";
 
 const WHAT_IT_DOES = [
@@ -10,11 +13,22 @@ const WHAT_IT_DOES = [
   { n: "03", t: "Equivalencia", d: "Cuánto debe cobrar la otra modalidad para empatar tu valor." },
 ];
 
-export function LandingHero({ onStart, onExample }: { onStart: () => void; onExample: () => void }) {
+export function LandingHero() {
+  const router = useRouter();
+  const { input, loaded, reset } = useScenario();
   const strategy = getStrategy("pe");
+  // Quien ya hizo una comparación (guardada en localStorage) vuelve a ver el
+  // home: lo reconocemos y le ofrecemos retomar, en vez de tratarlo como nuevo.
+  const hasSaved = loaded && input.wizardDone;
+
   return (
-    <section className="mx-auto max-w-5xl py-16 sm:py-24">
-      <div className="animate-fade-up">
+    <section className="mx-auto max-w-5xl py-10 sm:py-14">
+      <header className="flex items-center justify-between gap-3">
+        <Wordmark size="md" />
+        <ThemeToggle />
+      </header>
+
+      <div className="mt-14 animate-fade-up sm:mt-20">
         <Eyebrow>No compares sueldos de portada</Eyebrow>
         <h1 className="mt-4 max-w-3xl font-display text-4xl font-semibold leading-[1.04] tracking-tight text-ink sm:text-6xl">
           Compara el <span className="text-accent">valor económico real</span> de tu trabajo.
@@ -36,13 +50,39 @@ export function LandingHero({ onStart, onExample }: { onStart: () => void; onExa
         ))}
       </div>
 
-      <div className="mt-9 flex animate-fade-up flex-wrap items-center gap-3 [animation-delay:140ms]">
-        <Button size="lg" onClick={onStart}>
-          Usar la calculadora →
-        </Button>
-        <Button size="lg" variant="ghost" onClick={onExample}>
-          Ver un ejemplo
-        </Button>
+      <div className="mt-9 animate-fade-up [animation-delay:140ms]">
+        {hasSaved ? (
+          <>
+            <p className="mb-3 inline-flex items-center gap-2 rounded-pill border border-line bg-surface px-3 py-1 font-mono text-[0.66rem] text-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-profit" />
+              Bienvenido de vuelta. Tienes una comparación guardada.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button size="lg" onClick={() => router.push("/comparison")}>
+                Volver a tu comparación →
+              </Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                onClick={() => {
+                  reset();
+                  router.push("/comparison");
+                }}
+              >
+                Empezar de nuevo
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="lg" onClick={() => router.push("/comparison")}>
+              Usar la calculadora →
+            </Button>
+            <Button size="lg" variant="ghost" onClick={() => router.push("/comparison?ejemplo=1")}>
+              Ver un ejemplo
+            </Button>
+          </div>
+        )}
       </div>
 
       <p className="mt-5 text-xs text-subtle">

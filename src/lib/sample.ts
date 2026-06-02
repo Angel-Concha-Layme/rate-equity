@@ -124,9 +124,9 @@ export const MODALITIES: Modality[] = [
   },
 ];
 
-export const RADAR_AXES: { key: keyof Modality["radar"]; label: string }[] = [
+export const RADAR_AXES: { key: keyof Modality["radar"]; label: string; full?: string }[] = [
   { key: "liquidity", label: "Liquidez" },
-  { key: "totalComp", label: "Comp. total" },
+  { key: "totalComp", label: "Comp. total", full: "Compensación total" },
   { key: "benefits", label: "Beneficios" },
   { key: "stability", label: "Estabilidad" },
   { key: "flexibility", label: "Flexibilidad" },

@@ -89,15 +89,15 @@ function wrapLabel(label: string): string[] {
 function stepColor(kind: BreakdownStep["kind"]): string {
   switch (kind) {
     case "start":
-      return "var(--muted)";
+      return "var(--wf-start)";
     case "dec":
       return "var(--loss)";
     case "inc":
       return "var(--profit)";
     case "subtotal":
-      return "var(--accent)";
+      return "var(--wf-subtotal)";
     case "total":
-      return "var(--primary)";
+      return "var(--wf-total)";
   }
 }
 
@@ -385,7 +385,7 @@ export function RadarChart({
                 }}
               >
                 <RadarTooltip
-                  title={ax.label}
+                  title={ax.full ?? ax.label}
                   reason={AXIS_REASON[ax.key]}
                   rows={modalities.map((m, mi) => ({
                     key: m.key,
