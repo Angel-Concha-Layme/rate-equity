@@ -126,6 +126,18 @@ export function BrandGlyph({
           <path d="M12 3.2l2.5 5.6 6.1.6-4.6 4 1.4 6L12 16.9 6.6 19.4 8 13.4l-4.6-4 6.1-.6z" />
         </svg>
       );
+    case "equity":
+      // La tesis del producto: dos montos distintos (los brutos que se
+      // comparan) que convergen al MISMO valor economico. Dos barras de
+      // distinto alto sobre una base comun, unidas por un signo igual.
+      return (
+        <svg {...base} fill="currentColor" stroke="none">
+          <rect x="4.4" y="10" width="3.7" height="9.6" rx="1.6" />
+          <rect x="15.9" y="5.4" width="3.7" height="14.2" rx="1.6" />
+          <rect x="9.9" y="10.5" width="4.2" height="2.2" rx="1.1" />
+          <rect x="9.9" y="14.5" width="4.2" height="2.2" rx="1.1" />
+        </svg>
+      );
     case "ledger":
     default:
       return (

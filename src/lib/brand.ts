@@ -14,7 +14,8 @@ export type GlyphKind =
   | "hex"
   | "bolt"
   | "wave"
-  | "star";
+  | "star"
+  | "equity";
 
 export type MarkStyle = "tile" | "outline" | "plain";
 
@@ -47,7 +48,7 @@ export const BRAND: Brand = {
   markAccent: "Equity",
   tagline: "Valor económico real",
   locale: "Perú · 2026",
-  theme: "ledger-v2",
-  glyph: "ledger",
+  theme: "light",
+  glyph: "equity",
   markStyle: "tile",
 };
