@@ -41,6 +41,10 @@ export interface ScenarioInput {
   billingCurrency: CurrencyCode; // currency billed in; converted to the country's local one
   deductHolidays?: boolean; // subtract national holidays from working days
   expenses?: Expense[]; // monthly fixed expenses, in local currency (general feature)
+  expensesOn?: boolean; // whether the fixed expenses are applied to the disposable
+  // Equivalence basis: "valor" matches total economic value (default); "bruto"
+  // matches the planilla's BASE gross against the independiente's total value.
+  compareBasis?: "valor" | "bruto";
   wizardDone?: boolean; // already completed the initial wizard
 }
 
@@ -54,6 +58,8 @@ export const DEFAULT_SCENARIO: ScenarioInput = {
   billingCurrency: "PEN",
   deductHolidays: false,
   expenses: defaultExpenses(),
+  expensesOn: false,
+  compareBasis: "valor",
   wizardDone: false,
 };
 
@@ -117,11 +123,19 @@ export function computeScenario(input: ScenarioInput): ScenarioResult {
 
   const yours = model(role, yourAnnualIncome, yourFraction);
 
-  // 2) equivalent in the other role with the same total annual value
-  //    (expressed as a fixed monthly: "would need S/ X per month")
+  // 2) equivalent in the other role. By default both sides match the SAME total
+  //    annual economic value. In "bruto" mode the formal (planilla) role enters
+  //    the equality through its BASE gross salary instead of its total value,
+  //    while the informal (independiente) keeps its total value (which, lacking
+  //    benefits, is almost its gross). So the planilla's gross is set equal to
+  //    the independiente's total value; the planilla's own total value then
+  //    lands well above (the value of its grati / CTS / EsSalud).
+  const basis = input.compareBasis ?? "valor";
+  const matchValue = (r: Role, m: Result) =>
+    basis === "bruto" && r === "formal" ? m.gross * 12 : m.annual.totalValue;
   const equivAnnualIncome = bisect(
-    (x) => model(other, x, uniformFraction).annual.totalValue,
-    yours.annual.totalValue,
+    (x) => matchValue(other, model(other, x, uniformFraction)),
+    matchValue(role, yours),
   );
   const equivalent = model(other, equivAnnualIncome, uniformFraction);
 
@@ -142,7 +156,7 @@ export function computeScenario(input: ScenarioInput): ScenarioResult {
   // Fixed monthly expenses (already in local currency) apply equally to both
   // modalities: they reduce the disposable bottom line without altering the
   // economic-value comparison used for the equivalence.
-  const monthlyExpenses = totalMonthlyExpenses(input.expenses ?? []);
+  const monthlyExpenses = input.expensesOn ? totalMonthlyExpenses(input.expenses ?? []) : 0;
   pair.forEach((m) => applyExpenses(m, monthlyExpenses));
 
   return { yours, equivalent, year };

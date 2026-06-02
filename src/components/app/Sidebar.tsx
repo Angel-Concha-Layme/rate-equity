@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Card, SegmentedControl, FlagSelect, MoneyInput, InfoDot, Eyebrow, Divider, Toggle, Modal } from "@/components/common";
-import { BrandMark } from "@/components/common/BrandMark";
+import { Card, SegmentedControl, FlagSelect, MoneyInput, InfoDot, Eyebrow, Divider, Toggle, ThemeToggle, Modal } from "@/components/common";
+import { Wordmark } from "@/components/common/Wordmark";
 import { toast } from "@/components/common/Toast";
 import { ScheduleField } from "@/components/app/ScheduleField";
 import { ExpensesField } from "@/components/app/ExpensesField";
@@ -66,8 +66,11 @@ export function Sidebar({
     <aside className="min-w-0 lg:sticky lg:top-0 lg:h-screen lg:py-5">
       <Card className="flex h-full min-h-0 flex-col overflow-y-auto p-5">
         <div className="mb-5 flex items-center justify-between gap-2">
-          <BrandMark />
-          <span className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-subtle">{countryLabel}</span>
+          <Wordmark size="sm" />
+          <div className="flex items-center gap-2.5">
+            <span className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-subtle">{countryLabel}</span>
+            <ThemeToggle />
+          </div>
         </div>
 
         <div className="flex items-start justify-between gap-2">
@@ -201,6 +204,29 @@ export function Sidebar({
             </Ctrl>
           )}
 
+          <Ctrl
+            label="Gastos mensuales"
+            info={`Tus gastos fijos del mes en moneda local (${localSymbol}). Reducen tu liquidez disponible; el valor económico total no cambia.`}
+          >
+            <label className="flex cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5">
+              <span className="text-[0.95rem] text-muted">Incluir mis gastos</span>
+              <Toggle
+                checked={!!input.expensesOn}
+                onChange={(v) => patch({ expensesOn: v })}
+                label="Incluir gastos mensuales"
+              />
+            </label>
+            {input.expensesOn && (
+              <div className="mt-2">
+                <ExpensesField
+                  expenses={input.expenses ?? defaultExpenses()}
+                  onChange={(expenses) => patch({ expenses })}
+                  currencySymbol={localSymbol}
+                />
+              </div>
+            )}
+          </Ctrl>
+
           <div className="mt-auto pt-3">
             <button
               type="button"
@@ -259,13 +285,17 @@ export function Sidebar({
           </Ctrl>
 
           <Ctrl
-            label="Gastos mensuales"
-            info={`Gastos fijos del mes en moneda local (${localSymbol}). Reducen tu liquidez disponible; el valor económico total no cambia. Solo cuentan los que tengan un monto.`}
+            label="Base de comparación"
+            info="Valor total: el equivalente iguala tu valor económico total (recomendado). Bruto: iguala el sueldo bruto de la planilla con el valor total del independiente; el valor total de la planilla queda por encima, por sus gratificaciones, CTS y EsSalud."
           >
-            <ExpensesField
-              expenses={input.expenses ?? defaultExpenses()}
-              onChange={(expenses) => patch({ expenses })}
-              currencySymbol={localSymbol}
+            <SegmentedControl
+              aria-label="Base de comparación"
+              value={input.compareBasis ?? "valor"}
+              onChange={(v) => patch({ compareBasis: v })}
+              options={[
+                { value: "valor", label: "Valor total" },
+                { value: "bruto", label: "Bruto" },
+              ]}
             />
           </Ctrl>
         </div>

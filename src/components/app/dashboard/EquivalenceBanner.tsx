@@ -26,38 +26,59 @@ export function EquivalenceBanner({
 
   const averageRises = yours.monthlyAverage - yours.net > yours.net * 0.04;
   const hasExpenses = !!yours.monthlyExpenses;
+  const basis = input.compareBasis ?? "valor";
+  const formal = yours.role === "formal" ? yours : equivalent;
+  const informal = yours.role === "formal" ? equivalent : yours;
 
   return (
     <Card className={cn("p-5", className)}>
-      <Eyebrow>Equivalencia · valor económico real</Eyebrow>
-      <p className="mt-2 text-xl leading-snug text-ink sm:text-2xl">
-        {yourMeta.asPhrase}, tu ingreso bruto es{" "}
-        <strong className="text-accent">{money(yours.gross)}</strong>/mes. Para igualar tu valor económico
-        total, {equivMeta.subjectPhrase} necesita un ingreso bruto de{" "}
-        <strong className="text-accent">{money(equivalent.gross)}</strong>/mes.
-      </p>
-      <p className="mt-2 text-muted">
-        {averageRises ? (
-          <>
-            En un mes típico recibes <strong className="text-ink">{money(yours.net)}</strong>, pero tu{" "}
-            <strong className="text-profit">promedio real es {money(yours.monthlyAverage)}</strong>{" "}
-            {yourMeta.averageReason}.{" "}
-          </>
-        ) : (
-          <>Tu ingreso es plano: el promedio ({money(yours.monthlyAverage)}) es casi tu mes típico.{" "}</>
-        )}
-        {equivalent.net > yours.net ? (
-          <>
-            Aunque {equivMeta.subjectPhrase} reciba más efectivo cada mes, su{" "}
-            <strong className="text-ink">valor económico total es el mismo</strong> que el tuyo.
-          </>
-        ) : (
-          <>
-            Recibes más efectivo cada mes, pero {equivMeta.subjectPhrase} alcanza el{" "}
-            <strong className="text-ink">mismo valor económico total</strong> {equivMeta.deferredValue}.
-          </>
-        )}
-      </p>
+      {basis === "bruto" ? (
+        <>
+          <Eyebrow>Equivalencia · base bruto</Eyebrow>
+          <p className="mt-2 text-xl leading-snug text-ink sm:text-2xl">
+            El ingreso bruto en planilla (<strong className="text-accent">{money(formal.gross)}</strong>/mes) se
+            iguala al valor económico total de un independiente (
+            <strong className="text-accent">{money(informal.totalComp)}</strong>/mes).
+          </p>
+          <p className="mt-2 text-muted">
+            Aun así, el valor económico total en planilla es{" "}
+            <strong className="text-ink">{money(formal.totalComp)}</strong>/mes: queda por encima porque suma
+            gratificaciones, CTS y EsSalud que el independiente no recibe.
+          </p>
+        </>
+      ) : (
+        <>
+          <Eyebrow>Equivalencia · valor económico real</Eyebrow>
+          <p className="mt-2 text-xl leading-snug text-ink sm:text-2xl">
+            {yourMeta.asPhrase}, tu ingreso bruto es{" "}
+            <strong className="text-accent">{money(yours.gross)}</strong>/mes. Para igualar tu valor económico
+            total, {equivMeta.subjectPhrase} necesita un ingreso bruto de{" "}
+            <strong className="text-accent">{money(equivalent.gross)}</strong>/mes.
+          </p>
+          <p className="mt-2 text-muted">
+            {averageRises ? (
+              <>
+                En un mes típico recibes <strong className="text-ink">{money(yours.net)}</strong>, pero tu{" "}
+                <strong className="text-profit">promedio real es {money(yours.monthlyAverage)}</strong>{" "}
+                {yourMeta.averageReason}.{" "}
+              </>
+            ) : (
+              <>Tu ingreso es plano: el promedio ({money(yours.monthlyAverage)}) es casi tu mes típico.{" "}</>
+            )}
+            {equivalent.net > yours.net ? (
+              <>
+                Aunque {equivMeta.subjectPhrase} reciba más efectivo cada mes, su{" "}
+                <strong className="text-ink">valor económico total es el mismo</strong> que el tuyo.
+              </>
+            ) : (
+              <>
+                Recibes más efectivo cada mes, pero {equivMeta.subjectPhrase} alcanza el{" "}
+                <strong className="text-ink">mismo valor económico total</strong> {equivMeta.deferredValue}.
+              </>
+            )}
+          </p>
+        </>
+      )}
       {hasExpenses && (
         <p className="mt-2 text-muted">
           Tras tus <strong className="text-ink">gastos fijos de {money(yours.monthlyExpenses ?? 0)}/mes</strong>, te
