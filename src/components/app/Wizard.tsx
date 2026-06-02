@@ -123,10 +123,10 @@ export function Wizard({
                   >
                     <div
                       className={cn(
-                        "h-full rounded-card border border-line bg-surface p-5 transition duration-200",
+                        "h-full rounded-card border-2 border-line bg-surface p-5 transition duration-200",
                         active
-                          ? "-translate-y-0.5 shadow-pop"
-                          : "shadow-card hover:-translate-y-0.5 hover:shadow-pop",
+                          ? "-translate-y-0.5 border-primary shadow-pop theme-dark:border-accent"
+                          : "shadow-card hover:-translate-y-0.5 hover:border-line-strong hover:shadow-pop",
                       )}
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -188,9 +188,9 @@ export function Wizard({
                   onChange={(v: CurrencyCode) => patch({ billingCurrency: v })}
                   options={CURRENCY_OPTIONS.map((m) => ({
                     value: m.value,
-                    label: m.label,
+                    label: m.value,
                     flag: m.flag,
-                    sub: m.symbol,
+                    sub: m.label,
                   }))}
                 />
                 <div className="mt-3 text-xs">
