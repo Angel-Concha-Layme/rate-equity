@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { fontVars } from "./fonts";
 import { BRAND } from "@/lib/brand";
 import { Toaster } from "@/components/common/Toast";
@@ -27,6 +28,7 @@ export default function RootLayout({
           {children}
         </div>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
