@@ -3,20 +3,18 @@
 import { useRouter } from "next/navigation";
 import { Button, Card, Eyebrow, ThemeToggle } from "@/components/common";
 import { Wordmark } from "@/components/common/Wordmark";
-import { getStrategy } from "@/lib/calc";
 import { useScenario } from "@/lib/useScenario";
 import { BRAND } from "@/lib/brand";
 
 const WHAT_IT_DOES = [
   { n: "01", t: "Liquidez real", d: "Lo que de verdad te queda al mes, después de impuestos y aportes." },
-  { n: "02", t: "Valor total", d: "Sueldo + gratificaciones + CTS + salud, anualizado a su valor real." },
+  { n: "02", t: "Valor total", d: "Sueldo, bonos y beneficios anualizados a su valor real." },
   { n: "03", t: "Equivalencia", d: "Cuánto debe cobrar la otra modalidad para empatar tu valor." },
 ];
 
 export function LandingHero() {
   const router = useRouter();
   const { input, loaded, reset } = useScenario();
-  const strategy = getStrategy("pe");
   // Quien ya hizo una comparación (guardada en localStorage) vuelve a ver el
   // home: lo reconocemos y le ofrecemos retomar, en vez de tratarlo como nuevo.
   const hasSaved = loaded && input.wizardDone;
@@ -34,9 +32,9 @@ export function LandingHero() {
           Compara el <span className="text-accent">valor económico real</span> de tu trabajo.
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-          {strategy.copy.landingTagline}: el bruto engaña. {BRAND.name} calcula tu liquidez real,
-          beneficios, costo para la empresa, impuestos y tu valor por hora, para {strategy.meta.label}{" "}
-          con tasas 2026.
+          Seas empleado o independiente, el bruto engaña. {BRAND.name} calcula tu liquidez real,
+          beneficios, costo para la empresa, impuestos y tu valor por hora, con las reglas
+          tributarias del país que elijas.
         </p>
       </div>
 
