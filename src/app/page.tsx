@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LandingHero } from "@/components/app/LandingHero";
+import { Faq } from "@/components/app/Faq";
 import { SiteFooter } from "@/components/app/SiteFooter";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export default function Home() {
     <>
       <main className="flex-1 px-4 sm:px-6 lg:px-8">
         <LandingHero />
+        <Faq />
       </main>
       <SiteFooter />
     </>
