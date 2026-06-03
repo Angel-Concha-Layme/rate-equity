@@ -5,8 +5,8 @@ export const alt = SITE.ogImageAlt;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// Imagen de previsualización social (1200x630). Solo flexbox + subset CSS
-// (satori). El glifo "equity" se recrea con divs (dos barras + igual).
+// Social preview image (1200x630). Flexbox + CSS subset only (satori). The
+// "equity" glyph is recreated with divs (two bars + equals sign).
 export default function OpengraphImage() {
   return new ImageResponse(
     (
@@ -22,7 +22,6 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        {/* marca */}
         <div style={{ display: "flex", alignItems: "center", gap: "22px" }}>
           <div
             style={{
@@ -50,7 +49,6 @@ export default function OpengraphImage() {
           </div>
         </div>
 
-        {/* titular */}
         <div style={{ display: "flex", flexDirection: "column", gap: "26px" }}>
           <div
             style={{
@@ -71,7 +69,6 @@ export default function OpengraphImage() {
           </div>
         </div>
 
-        {/* pie */}
         <div style={{ display: "flex", fontSize: "24px", color: "#87a0a2", letterSpacing: "0.02em" }}>
           rate-equity.vercel.app
         </div>

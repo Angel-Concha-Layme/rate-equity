@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-// apple-touch-icon: el glifo "equity" (dos barras + igual) en el tile de marca.
+// apple-touch-icon: the "equity" glyph (two bars + equals sign) on the brand tile.
 export default function AppleIcon() {
   return new ImageResponse(
     (

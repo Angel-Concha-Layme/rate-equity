@@ -4,9 +4,8 @@
  * numeric subtractions happen after the engine has already worked in local
  * currency. The country strategy is intentionally NOT involved here.
  *
- * An expense only counts when it has a positive amount ("si no se pone un
- * número, no cuenta"). Users start from a few opinionated suggestions and may
- * add their own custom rows.
+ * An expense only counts when it has a positive amount. Users start from a few
+ * opinionated suggestions and may add their own custom rows.
  */
 import type { BreakdownStep } from "@/lib/sample";
 import type { Result } from "@/lib/countries/types";

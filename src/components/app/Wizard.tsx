@@ -67,7 +67,6 @@ export function Wizard({
   return (
     <div className="py-12 sm:py-16">
       <Card className="mx-auto max-w-xl animate-fade-up p-6 sm:p-8">
-        {/* header: progress + cancel */}
         <div className="mb-6 flex items-center justify-between gap-3">
           <StepDots count={3} current={step} onJump={(i) => setStep(i)} />
           <button
@@ -86,7 +85,6 @@ export function Wizard({
         <p className="mt-1.5 text-sm text-muted">{STEPS[step].sub}</p>
 
         <div className="mt-7 min-h-[180px]">
-          {/* Step 1: country */}
           {step === 0 && (
             <Field label="País donde trabajas" htmlFor="wiz-pais">
               <FlagSelect
@@ -108,7 +106,6 @@ export function Wizard({
             </Field>
           )}
 
-          {/* Step 2: category */}
           {step === 1 && (
             <div className="grid gap-4 sm:grid-cols-2">
               {categories.map((c) => {
@@ -142,7 +139,6 @@ export function Wizard({
             </div>
           )}
 
-          {/* Step 3: how much and how */}
           {step === 2 && (
             <div className="grid gap-5">
               <Field label="¿Cómo cobras?">
@@ -212,7 +208,6 @@ export function Wizard({
           )}
         </div>
 
-        {/* navigation */}
         <div className="mt-8 flex items-center justify-between gap-3 border-t border-line pt-5">
           <Button
             variant="ghost"

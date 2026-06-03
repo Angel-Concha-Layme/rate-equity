@@ -42,8 +42,8 @@ export const metadata: Metadata = {
   publisher: SITE.name,
 };
 
-// El color de tema (claro/oscuro) lo controla el toggle vía data-theme; aquí se
-// aproxima por preferencia del sistema para la barra del navegador móvil.
+// The theme color (light/dark) is controlled by the toggle via data-theme; here
+// it is approximated from the system preference for the mobile browser bar.
 export const viewport: Viewport = {
   colorScheme: "light dark",
   themeColor: [
@@ -52,7 +52,7 @@ export const viewport: Viewport = {
   ],
 };
 
-// Aplica el tema en <html> antes del primer paint para evitar parpadeo.
+// Apply the theme on <html> before the first paint to avoid flicker.
 const THEME_BOOT =
   "(function(){try{var t=localStorage.getItem('re-theme');if(t!=='light'&&t!=='dark'){t='light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();";
 

@@ -15,8 +15,8 @@ const WHAT_IT_DOES = [
 export function LandingHero() {
   const router = useRouter();
   const { input, loaded, reset } = useScenario();
-  // Quien ya hizo una comparación (guardada en localStorage) vuelve a ver el
-  // home: lo reconocemos y le ofrecemos retomar, en vez de tratarlo como nuevo.
+  // A returning visitor with a saved comparison (in localStorage): recognize
+  // them and offer to resume instead of treating them as new.
   const hasSaved = loaded && input.wizardDone;
 
   return (

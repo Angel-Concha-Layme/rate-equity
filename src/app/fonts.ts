@@ -1,8 +1,8 @@
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 
-// RateEquity · sistema tipográfico unificado para modo claro (Solvente) y
-// oscuro (Foco). Archivo display (titulares y cifras), Inter cuerpo,
-// JetBrains Mono para etiquetas y datos.
+// RateEquity · unified type system for light (Solvente) and dark (Foco) modes.
+// Archivo for display (headings and figures), Inter for body, JetBrains Mono
+// for labels and data.
 const display = Archivo({ subsets: ["latin"], variable: "--brand-display", display: "swap" });
 const sans = Inter({ subsets: ["latin"], variable: "--brand-sans", display: "swap" });
 const mono = JetBrains_Mono({

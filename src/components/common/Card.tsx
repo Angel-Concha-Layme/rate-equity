@@ -11,7 +11,7 @@ export function Card({
     <div
       className={cn(
         "rounded-card border border-line bg-surface transition duration-300 hover:border-accent/40",
-        // Sombra verde (--primary) solo en hover (claro); en oscuro se conserva la previa.
+        // Green shadow (--primary) only on hover (light); dark keeps the previous one.
         "theme-light:hover:shadow-[0_0_22px_color-mix(in_oklab,var(--primary)_40%,transparent)]",
         "theme-dark:shadow-[0_0_16px_var(--line)] theme-dark:hover:shadow-[0_0_22px_color-mix(in_oklab,var(--accent)_40%,transparent)]",
         ruled && "border-t-2 border-t-line-strong",

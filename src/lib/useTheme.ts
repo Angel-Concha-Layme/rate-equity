@@ -27,7 +27,7 @@ export function useTheme() {
       try {
         localStorage.setItem(THEME_KEY, next);
       } catch {
-        /* almacenamiento no disponible: el cambio vale solo en memoria */
+        /* storage unavailable: the change lives only in memory */
       }
       return next;
     });

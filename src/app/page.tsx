@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-// "/" es el home: la landing. La calculadora vive en "/comparison".
+// "/" is the home page: the landing. The calculator lives at "/comparison".
 export default function Home() {
   return (
     <>

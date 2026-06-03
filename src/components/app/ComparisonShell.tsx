@@ -11,10 +11,10 @@ import { DashboardView } from "@/components/app/DashboardView";
 type Phase = "wizard" | "dashboard";
 
 /**
- * /comparison: la calculadora. Gobierna el wizard de onboarding y el dashboard
- * en vivo. Quien llega nuevo arranca en el wizard; `?ejemplo=1` (el CTA "ver un
- * ejemplo") y quien ya completó el wizard abren el dashboard. Cancelar/reiniciar
- * vuelve al home ("/").
+ * /comparison: the calculator. Drives the onboarding wizard and the live
+ * dashboard. New visitors start in the wizard; `?ejemplo=1` (the "see an
+ * example" CTA) and users who already completed the wizard open the dashboard.
+ * Cancel/reset returns to the home page ("/").
  */
 export function ComparisonShell() {
   const router = useRouter();
@@ -25,14 +25,14 @@ export function ComparisonShell() {
 
   const fx = useFxRate(input.billingCurrency);
 
-  // Conversión a moneda local (PEN) ANTES del motor; computeScenario es puro.
+  // Convert to local currency (PEN) BEFORE the engine; computeScenario is pure.
   const inputPEN = useMemo(
     () => ({ ...input, amount: Math.round(input.amount * fx.rate) }),
     [input, fx.rate],
   );
   const { yours, equivalent } = useMemo(() => computeScenario(inputPEN), [inputPEN]);
 
-  // Evita parpadeo de fase mientras el escenario hidrata desde el cache.
+  // Avoid phase flicker while the scenario hydrates from the cache.
   if (!loaded) return null;
 
   const phase: Phase = manualPhase ?? (input.wizardDone || example ? "dashboard" : "wizard");

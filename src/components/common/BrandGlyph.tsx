@@ -127,9 +127,9 @@ export function BrandGlyph({
         </svg>
       );
     case "equity":
-      // La tesis del producto: dos montos distintos (los brutos que se
-      // comparan) que convergen al MISMO valor economico. Dos barras de
-      // distinto alto sobre una base comun, unidas por un signo igual.
+      // The product thesis: two different amounts (the gross figures being
+      // compared) converging to the SAME economic value. Two bars of different
+      // heights on a common base, joined by an equals sign.
       return (
         <svg {...base} fill="currentColor" stroke="none">
           <rect x="4.4" y="10" width="3.7" height="9.6" rx="1.6" />

@@ -173,7 +173,6 @@ export function WaterfallChart({
       className={className}
       style={{ width: W, maxWidth: "100%" }}
     >
-      {/* baseline */}
       <line x1={PL} y1={y(0)} x2={W - PR} y2={y(0)} stroke="var(--chart-axis)" strokeWidth="1" />
 
       {bars.map((b, i) => {
@@ -188,7 +187,6 @@ export function WaterfallChart({
         const arrow = b.kind === "dec" ? "▾ " : b.kind === "inc" ? "▴ " : "";
         return (
           <g key={i}>
-            {/* dotted connector */}
             {i < n - 1 && (
               <line
                 x1={b.cx + barW / 2}
@@ -201,13 +199,11 @@ export function WaterfallChart({
                 opacity="0.8"
               />
             )}
-            {/* bar */}
             {b.amount === 0 ? (
               <line x1={b.cx - barW / 2} y1={y(b.runAfter)} x2={b.cx + barW / 2} y2={y(b.runAfter)} stroke={color} strokeWidth="2" />
             ) : (
               <rect x={b.cx - barW / 2} y={top} width={barW} height={h} rx="3" fill={color} />
             )}
-            {/* value label */}
             <text
               x={b.cx}
               y={top - 9}
@@ -220,7 +216,6 @@ export function WaterfallChart({
               {arrow}
               {labelText}
             </text>
-            {/* X-axis label */}
             {wrapLabel(b.label).map((ln, li, arr) => (
               <text
                 key={li}
@@ -312,7 +307,6 @@ export function RadarChart({
           role="img"
           aria-label="Comparación de modalidades por atributo"
         >
-          {/* rings */}
           {rings.map((ring, ri) => (
             <polygon
               key={ri}
@@ -322,12 +316,10 @@ export function RadarChart({
               strokeWidth="1"
             />
           ))}
-          {/* series */}
           {modalities.map((m, mi) => {
             const pts = axes.map((ax, i) => polar((R * m.radar[ax.key]) / 100, i).join(",")).join(" ");
             return <polygon key={m.key} points={pts} fill={colors[mi]} fillOpacity="0.13" stroke={colors[mi]} strokeWidth="2" strokeLinejoin="round" />;
           })}
-          {/* radii + labels (with a per-edge hover zone) */}
           {axes.map((ax, i) => {
             const [ex, ey] = polar(R, i);
             const [lx, ly] = polar(R + 20, i);
