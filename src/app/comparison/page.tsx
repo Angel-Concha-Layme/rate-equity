@@ -1,10 +1,13 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ComparisonShell } from "@/components/app/ComparisonShell";
-import { BRAND } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  title: `Comparación · ${BRAND.name}`,
+  title: "Comparación",
+  description:
+    "Tu comparación de valor económico real entre empleo en planilla e independiente: liquidez, beneficios, costo para la empresa, impuestos y valor por hora.",
+  // canonical sin el query param ?ejemplo para no duplicar contenido.
+  alternates: { canonical: "/comparison" },
 };
 
 // "/comparison" es la calculadora (wizard + dashboard). Sin footer: el footer
