@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { fontVars } from "./fonts";
 import { SITE } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Toaster } from "@/components/common/Toast";
 import "./globals.css";
 
@@ -63,6 +64,7 @@ export default function RootLayout({
     <html lang="es" className={`${fontVars} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full">
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+        <JsonLd />
         <div className="flex min-h-screen flex-col overflow-x-clip bg-canvas bg-[image:var(--tex)] bg-fixed [background-size:var(--tex-size,auto)] font-sans text-ink selection:bg-accent/25">
           {children}
         </div>
