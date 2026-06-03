@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { LandingHero } from "@/components/app/LandingHero";
 import { SiteFooter } from "@/components/app/SiteFooter";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 // "/" es el home: la landing. La calculadora vive en "/comparison".
 export default function Home() {
