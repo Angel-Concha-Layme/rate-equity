@@ -25,7 +25,7 @@ export function scheduleSummary(h: number[]): string {
 function Stepper({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const set = (v: number) => onChange(Math.max(0, Math.min(24, v)));
   const btn =
-    "grid size-8 place-items-center rounded-input border border-line-strong text-lg leading-none text-ink transition hover:bg-surface-2";
+    "grid size-8 cursor-pointer place-items-center rounded-input border border-line-strong text-lg leading-none text-ink transition hover:bg-surface-2";
   return (
     <div className="flex items-center gap-1.5">
       <button type="button" aria-label="menos" onClick={() => set(value - 1)} className={btn}>
@@ -73,7 +73,7 @@ export function ScheduleField({
         type="button"
         onClick={openModal}
         aria-label="Editar horario semanal"
-        className="flex w-full items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5 text-left transition hover:border-ring/60 focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25"
+        className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5 text-left transition hover:border-ring/60 focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25"
       >
         <span className="text-[0.95rem]">
           <span className="font-mono font-semibold tabular-nums text-ink">{total} h</span>
@@ -104,7 +104,7 @@ export function ScheduleField({
                 type="button"
                 onClick={() => setDraft([...p.schedule])}
                 className={cn(
-                  "rounded-pill border px-3 py-1.5 text-xs font-semibold transition",
+                  "cursor-pointer rounded-pill border px-3 py-1.5 text-xs font-semibold transition",
                   activo
                     ? "border-ink bg-surface-2 text-ink"
                     : "border-line-strong bg-surface-2 text-muted hover:text-ink",

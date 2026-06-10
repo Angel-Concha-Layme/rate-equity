@@ -33,7 +33,7 @@ export function FlagSelect<T extends string>({
         aria-label={ariaLabel}
         onClick={toggle}
         onKeyDown={onKeyDown}
-        className="flex w-full items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5 text-[0.95rem] text-ink transition hover:border-ring/60 focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25"
+        className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5 text-[0.95rem] text-ink transition hover:border-ring/60 focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25"
       >
         <span className="flex min-w-0 items-center gap-2.5">
           <span className="text-lg leading-none" aria-hidden>

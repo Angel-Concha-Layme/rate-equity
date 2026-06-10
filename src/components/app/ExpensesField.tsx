@@ -57,7 +57,7 @@ export function ExpensesField({
         type="button"
         onClick={openModal}
         aria-label="Editar gastos mensuales"
-        className="flex w-full items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5 text-left transition hover:border-ring/60 focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25"
+        className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-input border border-line-strong bg-surface-2 px-3 py-2.5 text-left transition hover:border-ring/60 focus:border-ring focus:outline-none focus:ring-[3px] focus:ring-ring/25"
       >
         <span className="truncate text-[0.95rem]">
           {total > 0 ? (
@@ -118,7 +118,7 @@ export function ExpensesField({
                   type="button"
                   onClick={() => remove(e.id)}
                   aria-label={`Quitar ${e.label || "gasto"}`}
-                  className="grid size-8 shrink-0 place-items-center rounded-input border border-line-strong text-muted transition hover:border-loss/60 hover:text-loss"
+                  className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-input border border-line-strong text-muted transition hover:border-loss/60 hover:text-loss"
                 >
                   <svg aria-hidden viewBox="0 0 20 20" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8">
                     <path d="M5 10h10" strokeLinecap="round" />
@@ -134,7 +134,7 @@ export function ExpensesField({
         <button
           type="button"
           onClick={addCustom}
-          className="mt-3 text-xs font-semibold text-accent underline-offset-4 hover:underline"
+          className="mt-3 cursor-pointer text-xs font-semibold text-accent underline-offset-4 hover:underline"
         >
           + Agregar gasto
         </button>

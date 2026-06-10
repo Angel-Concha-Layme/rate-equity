@@ -1,6 +1,6 @@
 "use client";
 
-import { Eyebrow, Metric, InfoDot } from "@/components/common";
+import { Card, Eyebrow, Metric, InfoDot } from "@/components/common";
 
 export interface KpiDelta {
   dir: "up" | "down" | "eq";
@@ -25,7 +25,7 @@ export function KpiTile({
   info?: string;
 }) {
   return (
-    <div className="flex h-full flex-col gap-1.5 rounded-card border border-line bg-surface p-4 shadow-card">
+    <Card className="flex h-full flex-col gap-1.5 p-4">
       <div className="flex items-center gap-1.5">
         <Eyebrow>{label}</Eyebrow>
         {info && <InfoDot content={info} />}
@@ -43,6 +43,6 @@ export function KpiTile({
           {compare.label}: <span className="font-mono tabular-nums">{compare.value}</span>
         </p>
       )}
-    </div>
+    </Card>
   );
 }

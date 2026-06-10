@@ -1,19 +1,21 @@
 "use client";
 
 import { useTheme } from "@/lib/useTheme";
+import { Tooltip } from "@/components/common/Tooltip";
 
 /** Header control to switch between light (Solvente) and dark (Foco). */
 export function ThemeToggle() {
   const { theme, toggle } = useTheme();
   const isDark = theme === "dark";
+  const label = isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-      title={isDark ? "Modo claro" : "Modo oscuro"}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-pill border border-line text-muted transition hover:border-line-strong hover:text-ink"
-    >
+    <Tooltip content={label}>
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={label}
+        className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-pill border border-line text-muted transition hover:border-line-strong hover:text-ink"
+      >
       {isDark ? (
         <svg
           width="15"
@@ -44,6 +46,7 @@ export function ThemeToggle() {
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>
       )}
-    </button>
+      </button>
+    </Tooltip>
   );
 }

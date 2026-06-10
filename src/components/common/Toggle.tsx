@@ -19,7 +19,7 @@ export function Toggle({
       aria-label={label}
       onClick={() => onChange(!checked)}
       className={cn(
-        "relative inline-flex h-6 w-11 shrink-0 items-center rounded-pill border border-line-strong transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-pill border border-line-strong transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         checked ? "bg-primary theme-dark:bg-accent" : "bg-surface-2",
       )}
     >

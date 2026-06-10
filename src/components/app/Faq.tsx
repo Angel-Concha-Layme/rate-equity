@@ -1,4 +1,4 @@
-import { Eyebrow } from "@/components/common";
+import { Card, Eyebrow } from "@/components/common";
 
 /** Single source for the FAQ: feeds both the visible accordion and FAQPage JSON-LD. */
 const FAQS = [
@@ -43,10 +43,7 @@ export function Faq() {
       </h2>
       <div className="mt-8 flex flex-col gap-3">
         {FAQS.map((f) => (
-          <details
-            key={f.q}
-            className="group rounded-card border border-line bg-surface px-5 py-4 transition hover:border-line-strong"
-          >
+          <Card as="details" key={f.q} className="group px-5 py-4">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-lg font-semibold text-ink [&::-webkit-details-marker]:hidden">
               {f.q}
               <span className="shrink-0 text-2xl font-normal leading-none text-subtle transition-transform duration-200 group-open:rotate-45">
@@ -54,7 +51,7 @@ export function Faq() {
               </span>
             </summary>
             <p className="mt-3 leading-relaxed text-muted">{f.a}</p>
-          </details>
+          </Card>
         ))}
       </div>
       <script

@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import type { Result, ScenarioInput } from "@/lib/calc";
 import type { FxState } from "@/lib/useFxRate";
 import { Sidebar } from "@/components/app/Sidebar";
 import { Dashboard } from "@/components/app/Dashboard";
+import { cn } from "@/lib/cn";
 
 /**
  * Main view: composes the side panel and the dashboard content in a two-column
@@ -27,12 +29,21 @@ export function DashboardView({
   onReopenWizard: () => void;
   onReset: () => void;
 }) {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <div className="grid gap-6 py-5 lg:grid-cols-[300px_minmax(0,1fr)] lg:py-0">
+    <div
+      className={cn(
+        "grid gap-6 py-5 lg:py-0 lg:transition-[grid-template-columns] lg:duration-300 lg:ease-out",
+        collapsed ? "lg:grid-cols-[56px_minmax(0,1fr)]" : "lg:grid-cols-[300px_minmax(0,1fr)]",
+      )}
+    >
       <Sidebar
         input={input}
         patch={patch}
         fx={fx}
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed((c) => !c)}
         onReopenWizard={onReopenWizard}
         onReset={onReset}
       />

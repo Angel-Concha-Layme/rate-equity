@@ -2,18 +2,25 @@
 
 import { cn } from "@/lib/cn";
 
-export function Card({
+type CardOwnProps = {
+  ruled?: boolean;
+};
+
+type CardProps<T extends React.ElementType> = CardOwnProps & {
+  as?: T;
+} & Omit<React.ComponentPropsWithoutRef<T>, keyof CardOwnProps | "as">;
+
+export function Card<T extends React.ElementType = "div">({
+  as,
   ruled = false,
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & { ruled?: boolean }) {
+}: CardProps<T>) {
+  const Component = (as ?? "div") as React.ElementType;
   return (
-    <div
+    <Component
       className={cn(
-        "rounded-card border border-line bg-surface transition duration-300 hover:border-accent/40",
-        // Green shadow (--primary) only on hover (light); dark keeps the previous one.
-        "theme-light:hover:shadow-[0_0_22px_color-mix(in_oklab,var(--primary)_40%,transparent)]",
-        "theme-dark:shadow-[0_0_16px_var(--line)] theme-dark:hover:shadow-[0_0_22px_color-mix(in_oklab,var(--accent)_40%,transparent)]",
+        "rounded-card border border-line bg-surface",
         ruled && "border-t-2 border-t-line-strong",
         className,
       )}
